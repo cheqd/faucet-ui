@@ -65,7 +65,7 @@
             <v-text-field
               v-model="address"
               label="cheqd Address"
-              hint="Example: cheqd1d7f9d6s4a5s8d01j293jd7392j1820jd021g1h"
+              :hint="`Example: ${DEFAULT_TESTING_ADDRESS}`"
               required
               class="col-12"
               :rules="address_rules"
@@ -203,7 +203,8 @@ export default {
         value => /^(cheqd)1[a-z0-9]{38}$/.test(value)||'Invalid cheqd address format.'
       ],
       CHEQD_MINIMAL_DENOM,
-      CHEQD_CURRENT_AMOUNT_GIVEN
+      CHEQD_CURRENT_AMOUNT_GIVEN,
+      DEFAULT_TESTING_ADDRESS
     }
   },
 
