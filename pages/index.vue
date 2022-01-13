@@ -2,7 +2,7 @@
 <template>
   <div>
     <div class="txtdts text-center">
-      <h1>Welcome to the cheqd Testnet self-serve faucet</h1>
+      <h1>Welcome to the cheqd Testnet self-serve <v-badge :color="faucet_status_color" dot class="statusbadge"> faucet </v-badge></h1>
       <p>If you are setting up a node on the cheqd test network here you can provide details required in order to receive tokens. This will enable you to promote your node to validator. start validating the cheqd test network and test out the identity functionalities available.</p>
     </div>
     <v-stepper v-model="step" alt-labels class="bgdarkopacity">
@@ -105,15 +105,70 @@
             depressed
             color="primary"
             class="d-block mx-auto"
+            :loading="loading"
           >Continue
           </v-btn>
         </v-form>
       </v-stepper-content>
     </v-stepper>
+    <v-alert
+      icon="mdi-shield-lock-outline"
+      prominent
+      dismissible
+      text
+      type="success"
+      v-model="success"
+      transition="scale-transition"
+      class="mt-3"
+      outlined
+    >
+      <b>Done! Your requests tokens should have arrived at your provided address ({{ CHEQD_CURRENT_AMOUNT_GIVEN }} {{ CHEQD_MINIMAL_DENOM }}).</b>
+    </v-alert>
+    <v-alert
+      icon="mdi-shield-lock-outline"
+      prominent
+      dismissible
+      text
+      type="error"
+      v-model="error"
+      transition="scale-transition"
+      class="mt-3"
+      outlined
+    >
+      <b>Server is unreachable at the moment. Kindly, try again later.</b>
+    </v-alert>
+    <v-alert
+      icon="mdi-shield-lock-outline"
+      prominent
+      dismissible
+      text
+      type="info"
+      v-model="error_non_existing_address"
+      transition="scale-transition"
+      class="mt-3"
+      outlined
+    >
+      <b>Address is not in the expected format for this chain or does not exist.</b>
+    </v-alert>
+    <v-alert
+      icon="mdi-shield-lock-outline"
+      prominent
+      dismissible
+      text
+      type="warning"
+      v-model="error_recaptcha"
+      transition="scale-transition"
+      class="mt-3"
+      outlined
+    >
+      <b>You haven't passed the reCaptcha Verification challenge yet.</b>
+    </v-alert>
   </div>
 </template>
 
 <script>
+
+import { CHEQD_MINIMAL_DENOM, CHEQD_CURRENT_AMOUNT_GIVEN, DEFAULT_TESTING_ADDRESS } from '../constants/constants'
 
 export default {
   data: () => {
@@ -121,12 +176,24 @@ export default {
       step: 1,
       address: null,
       valid: false,
-      tooltip_step_1: false,
+      loading: false,
+      success: false,
+      error: false,
+      error_non_existing_address: false,
+      error_recaptcha: false,
+      faucet_status: '',
+      faucet_status_color: 'green',
       address_rules: [
-        value => !!value||"Required.\n Example: cheqd1d7f9d6s4a5s8d01j293jd7392j1820jd021g1h",
+        value => !!value||"Required.\n Example: cheqd12248whff96tpfyqm2vyvf9k4wda9h2dhdkf2e4",
         value => /^(cheqd)1[a-z0-9]{38}$/.test(value)||'Invalid cheqd address format.'
-      ]
+      ],
+      CHEQD_MINIMAL_DENOM,
+      CHEQD_CURRENT_AMOUNT_GIVEN
     }
+  },
+
+  async mounted () {
+    setInterval(await this.handle_faucet_status(),30)
   },
 
   methods: {
@@ -137,33 +204,75 @@ export default {
               : false
     },
 
+    async handle_auto_dismiss (prop, interval=4000) {
+      return setTimeout(() => {return this[prop] = !this[prop]}, interval)
+    },
+
+    async handle_faucet_status () {
+      try {
+        const status = await this.$axios.get(
+          'http://34.65.45.226:8000/status'
+        )
+        if(status.data.status === 'ok') {
+          this.faucet_status_color = 'green'
+          this.faucet_status = 'Online'
+          return
+        }
+      } catch (error) {
+        this.faucet_status_color = 'red'
+        this.faucet_status = 'Offline'
+        return
+      }
+
+      this.faucet_status_color = 'red'
+      this.faucet_status = 'Offline'
+      return
+    },
+
     async handle_submit () {
+
+      this.loading = !this.loading
+
       try {
         const recaptcha_token = await this.$recaptcha.getResponse()
         console.warn(`Recaptcha token: ${recaptcha_token}`)
         await this.$recaptcha.reset()
-
-        const status = await this.handle_fetch()
-        console.warn(status)
-
       } catch (error) {
-        console.error(error)
+        this.loading = !this.loading
+        this.error_recaptcha = true
+        return this.handle_auto_dismiss('error_recaptcha')
       }
+
+      const status = await this.handle_fetch()
+      console.warn(status)
+
+      this.loading = !this.loading
+
+      if(!status) return this.error_non_existing_address = true
+
+      if(status.data === 'ok'){
+        this.success = true
+        return this.handle_auto_dismiss('success')
+      }
+
+      this.error = true
+      return this.handle_auto_dismiss('error')
     },
 
     async handle_fetch () {
       try {
         const response = await this.$axios.post(
-          `http://34.65.45.226`,
+          `http://34.65.45.226:8000/credit`,
           {
-            address: this.address
+            denom: CHEQD_MINIMAL_DENOM,
+            address: this.address || DEFAULT_TESTING_ADDRESS
           }
         )
+        console.warn(response)
         return response
       } catch (error) {
-        console.error(error)
+        return false
       }
-      return {}
     }
   }
 }
@@ -204,6 +313,11 @@ export default {
   }
   ::v-deep .v-stepper:not(.v-stepper--vertical) .v-stepper__label {
     display: block !important;
+  }
+  ::v-deep .statusbadge .v-badge__badge {
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
   }
   @media only screen and (max-width: 992px) {
     .bgdarkopacity {
