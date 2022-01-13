@@ -208,7 +208,7 @@ export default {
   },
 
   async mounted () {
-    await this.handle_interval(this.handle_faucet_status(), 2000)
+    await this.handle_interval(this.handle_faucet_status(), 30000)
   },
 
   methods: {
