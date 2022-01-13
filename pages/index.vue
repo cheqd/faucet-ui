@@ -2,7 +2,23 @@
 <template>
   <div>
     <div class="txtdts text-center">
-      <h1>Welcome to the cheqd Testnet self-serve <v-badge :color="faucet_status_color" dot class="statusbadge"> faucet </v-badge></h1>
+      <h1 class="welcometitle">Welcome to the cheqd Testnet self-serve faucet
+        <v-tooltip
+          top
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon
+              v-bind="attrs"
+              v-on="on"
+              small
+              color="green"
+              >
+              mdi-circle
+            </v-icon>
+          </template>
+          <span>{{ faucet_status }}</span>
+        </v-tooltip>
+      </h1>
       <p>If you are setting up a node on the cheqd test network here you can provide details required in order to receive tokens. This will enable you to promote your node to validator. start validating the cheqd test network and test out the identity functionalities available.</p>
     </div>
     <v-stepper v-model="step" alt-labels class="bgdarkopacity">
@@ -16,7 +32,6 @@
         Add your cheqd Address
         <v-tooltip
         top
-        v-model="tooltip_step_1"
         close-delay="2000"
         >
           <template v-slot:activator="{ on, attrs }">
@@ -168,7 +183,7 @@
 
 <script>
 
-import { CHEQD_MINIMAL_DENOM, CHEQD_CURRENT_AMOUNT_GIVEN, DEFAULT_TESTING_ADDRESS } from '../constants/constants'
+import { CHEQD_FAUCET_SERVER, CHEQD_MINIMAL_DENOM, CHEQD_CURRENT_AMOUNT_GIVEN, DEFAULT_TESTING_ADDRESS } from '../constants/constants'
 
 export default {
   data: () => {
@@ -184,7 +199,7 @@ export default {
       faucet_status: '',
       faucet_status_color: 'green',
       address_rules: [
-        value => !!value||"Required.\n Example: cheqd12248whff96tpfyqm2vyvf9k4wda9h2dhdkf2e4",
+        value => !!value||`Required.\n Example: ${DEFAULT_TESTING_ADDRESS}`,
         value => /^(cheqd)1[a-z0-9]{38}$/.test(value)||'Invalid cheqd address format.'
       ],
       CHEQD_MINIMAL_DENOM,
@@ -193,7 +208,7 @@ export default {
   },
 
   async mounted () {
-    setInterval(await this.handle_faucet_status(),30)
+    await this.handle_interval(this.handle_faucet_status(), 2000)
   },
 
   methods: {
@@ -208,10 +223,17 @@ export default {
       return setTimeout(() => {return this[prop] = !this[prop]}, interval)
     },
 
+    async handle_interval (promise, interval) {
+      while(true) {
+        await new Promise(resolve => setTimeout(resolve, interval))
+        await promise
+      }
+    },
+
     async handle_faucet_status () {
       try {
         const status = await this.$axios.get(
-          'http://34.65.45.226:8000/status'
+          `${CHEQD_FAUCET_SERVER}/status`
         )
         if(status.data.status === 'ok') {
           this.faucet_status_color = 'green'
@@ -234,8 +256,7 @@ export default {
       this.loading = !this.loading
 
       try {
-        const recaptcha_token = await this.$recaptcha.getResponse()
-        console.warn(`Recaptcha token: ${recaptcha_token}`)
+        await this.$recaptcha.getResponse()
         await this.$recaptcha.reset()
       } catch (error) {
         this.loading = !this.loading
@@ -244,7 +265,6 @@ export default {
       }
 
       const status = await this.handle_fetch()
-      console.warn(status)
 
       this.loading = !this.loading
 
@@ -262,13 +282,12 @@ export default {
     async handle_fetch () {
       try {
         const response = await this.$axios.post(
-          `http://34.65.45.226:8000/credit`,
+          `${CHEQD_FAUCET_SERVER}/credit`,
           {
             denom: CHEQD_MINIMAL_DENOM,
             address: this.address || DEFAULT_TESTING_ADDRESS
           }
         )
-        console.warn(response)
         return response
       } catch (error) {
         return false
@@ -319,17 +338,22 @@ export default {
     width: 12px;
     border-radius: 50%;
   }
+  .welcometitle {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
   @media only screen and (max-width: 992px) {
     .bgdarkopacity {
       width: 85%;
     }
     .txtdts h1 {
-       font-size: 42px;
+      font-size: 42px;
     }
   }
   @media only screen and (max-width: 756px) {
     .txtdts h1 {
-       font-size: 36px;
+      font-size: 36px;
     }
   }
   @media only screen and (max-width: 576px) {
@@ -338,12 +362,12 @@ export default {
       min-width: auto;
     }
     .txtdts h1 {
-       font-size: 32px;
+      font-size: 32px;
     }
   }
   @media only screen and (max-width: 500px) {
     .txtdts h1 {
-       font-size: 26px;
+      font-size: 26px;
     }
   }
 </style>
