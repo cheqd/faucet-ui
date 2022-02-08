@@ -6,8 +6,8 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - cheqd-faucet-ui',
-    title: 'cheqd-faucet-ui',
+    titleTemplate: 'cheqd Testnet Faucet',
+    title: 'cheqd Testnet Faucet',
     htmlAttrs: {
       lang: 'en'
     },
