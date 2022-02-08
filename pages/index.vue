@@ -1,35 +1,43 @@
 
 <template>
   <div>
-    <div class="txtdts text-center">
-      <h1 class="welcometitle">Welcome to the cheqd Testnet self-serve faucet
-        <v-tooltip
-          top
-        >
-          <template v-slot:activator="{ on, attrs }">
-            <v-icon
-              v-bind="attrs"
-              v-on="on"
-              small
-              color="green"
-              >
-              mdi-circle
-            </v-icon>
-          </template>
-          <span>{{ faucet_status }}</span>
-        </v-tooltip>
-      </h1>
-      <p>If you are setting up a node on the cheqd test network here you can provide details required in order to receive tokens. This will enable you to promote your node to validator. start validating the cheqd test network and test out the identity functionalities available.</p>
-    </div>
+
     <v-stepper v-model="step" alt-labels class="bgdarkopacity">
 
+      <!--  -->
       <v-stepper-step
         class="stepiconfont"
         step="1"
         :complete="step > 1"
         editable
       >
-        Add your cheqd Address
+        Instructions
+      </v-stepper-step>
+
+      <v-stepper-content
+        :step="1"
+      >
+        <div class="txtdts text-center">
+          <p>If you are a developer looking to test the functionality of cheqd network or setting up a node on testnet, setting up a node on the cheqd test network, you can acquire <b>test</b> CHEQ tokens through this faucet.</p>
+        </div>
+        <v-btn
+          @click="step++"
+          depressed
+          color="primary"
+          class="d-block mx-auto"
+        >Start
+      </v-btn>
+      </v-stepper-content>
+
+      <!--  -->
+
+      <v-stepper-step
+        class="stepiconfont"
+        step="2"
+        :complete="step > 2"
+        editable
+      >
+        Add your cheqd <b>testnet</b> Address
         <v-tooltip
         top
         close-delay="2000"
@@ -48,7 +56,7 @@
       </v-stepper-step>
 
       <v-stepper-content
-        :step="1"
+        :step="2"
       >
         <v-form
           ref="form"
@@ -64,7 +72,7 @@
           >
             <v-text-field
               v-model="address"
-              label="cheqd Address"
+              label="cheqd wallet Address"
               :hint="`Example: ${DEFAULT_TESTING_ADDRESS}`"
               required
               class="col-12"
@@ -86,8 +94,8 @@
       <v-divider></v-divider>
 
       <v-stepper-step
-        step="2"
-        :complete="step > 2"
+        step="3"
+        :complete="step > 3"
         class="stepiconfont"
       >
         Verification Challenge
@@ -109,7 +117,7 @@
       </v-stepper-step>
 
       <v-stepper-content
-        :step="2"
+        :step="3"
       >
         <v-form
           @submit.prevent="handle_submit"
@@ -196,8 +204,6 @@ export default {
       error: false,
       error_non_existing_address: false,
       error_recaptcha: false,
-      faucet_status: '',
-      faucet_status_color: 'green',
       address_rules: [
         value => !!value||`Required.\n Example: ${DEFAULT_TESTING_ADDRESS}`,
         value => /^(cheqd)1[a-z0-9]{38}$/.test(value)||'Invalid cheqd address format.'
@@ -206,10 +212,6 @@ export default {
       CHEQD_CURRENT_AMOUNT_GIVEN,
       DEFAULT_TESTING_ADDRESS
     }
-  },
-
-  async mounted () {
-    await this.handle_interval(this.handle_faucet_status(), 30000)
   },
 
   methods: {
@@ -222,34 +224,6 @@ export default {
 
     async handle_auto_dismiss (prop, interval=4000) {
       return setTimeout(() => {return this[prop] = !this[prop]}, interval)
-    },
-
-    async handle_interval (promise, interval) {
-      while(true) {
-        await new Promise(resolve => setTimeout(resolve, interval))
-        await promise
-      }
-    },
-
-    async handle_faucet_status () {
-      try {
-        const status = await this.$axios.get(
-          `${CHEQD_FAUCET_SERVER}/status`
-        )
-        if(status.data.status === 'ok') {
-          this.faucet_status_color = 'green'
-          this.faucet_status = 'Online'
-          return
-        }
-      } catch (error) {
-        this.faucet_status_color = 'red'
-        this.faucet_status = 'Offline'
-        return
-      }
-
-      this.faucet_status_color = 'red'
-      this.faucet_status = 'Offline'
-      return
     },
 
     async handle_submit () {
@@ -305,8 +279,7 @@ export default {
   }
   .bgdarkopacity {
     background: rgba(48,48,48,0.9) !important;
-    min-width: 300px;
-    width: 60%;
+    width: 700px;
     display: block;
     margin: 0 auto;
   }

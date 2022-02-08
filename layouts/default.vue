@@ -1,6 +1,119 @@
 <template>
   <v-app class="vappbackground">
-    <img class="mainimglogo" src="../assets/img/cheqd-Logo-White.png" alt="logo"/>
+    <v-header id="header">
+      <div class="flex_contheader">
+        <div class="statusheaderleft">
+          <img class="mainimglogo" src="../assets/img/cheqd-Logo-White.png" alt="logo"/>
+        </div>
+        <h1 class="testnetheader">Testnet Faucet</h1>
+        <div class="statusheader">
+          <div class="desktopstatusdiv">
+            <v-select
+                class="select_chain mr-3"
+                v-model="selected"
+                :items="items"
+                outlined
+                label="Chain ID"
+            ></v-select>
+            <div class="faucetcompstatus">
+              <h4 style="font-weight:300">Faucet Status:
+                <span class="statustextcol">
+                  <span style="margin-right:3px;">{{ faucet_status }}</span>
+                <v-tooltip
+                  top
+                >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-icon
+                    v-bind="attrs"
+                    v-on="on"
+                    small
+                    color="green"
+                    >
+                    mdi-circle
+                  </v-icon>
+                </template>
+                <span>{{ faucet_status }}</span>
+                </v-tooltip>
+                </span>
+              </h4>
+            </div>
+          </div>
+          <!--  -->
+          <div class="mobilestatusdiv">
+            <template>
+              <div class="text-center">
+                <v-dialog
+                  v-model="dialog"
+                  width="auto"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      icon
+                      color="white"
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      <v-icon>mdi-information-outline</v-icon>
+                    </v-btn>
+                  </template>
+
+                  <v-card>
+                    <v-card-title class="text-h5 lighten-2">
+                    </v-card-title>
+
+                    <v-card-text class="mt-2">
+                      <div class="faucetcompstatus">
+                        <v-select
+                            class="select_chain mr-3"
+                            v-model="selected"
+                            :items="items"
+                            outlined
+                            label="Chain ID"
+                        ></v-select>
+                        <h4 style="font-weight:300">Faucet Status:
+                          <span class="statustextcol">
+                            <span style="margin-right:3px;">{{ faucet_status }}</span>
+                          <v-tooltip
+                            top
+                          >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-icon
+                              v-bind="attrs"
+                              v-on="on"
+                              small
+                              color="green"
+                              >
+                              mdi-circle
+                            </v-icon>
+                          </template>
+                          <span>{{ faucet_status }}</span>
+                          </v-tooltip>
+                          </span>
+                        </h4>
+                      </div>
+                    </v-card-text>
+
+                    <v-divider></v-divider>
+
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        color="primary"
+                        text
+                        @click="dialog = false"
+                      >
+                        OK
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </div>
+            </template>
+          </div>
+          <!--  -->
+        </div>
+      </div>
+    </v-header>
     <v-main>
       <v-container class="maincontainer">
         <Nuxt />
@@ -22,13 +135,53 @@
 </template>
 
 <script>
+  import { CHEQD_FAUCET_SERVER } from '../constants/constants'
+
 export default {
   name: 'DefaultLayout',
   data () {
     return {
       fixed: false,
-      title: 'cheqd Testnet faucet'
+      title: 'cheqd Testnet faucet',
+      faucet_status: '',
+      faucet_status_color: 'green',
+      items: ['cheqd-testnet-4'],
+      selected: 'cheqd-testnet-4',
+      dialog: false
     }
+  },
+
+  async mounted () {
+    await this.handle_interval(this.handle_faucet_status(), 30000)
+  },
+  methods: {
+    async handle_faucet_status () {
+      try {
+        const status = await this.$axios.get(
+          `${CHEQD_FAUCET_SERVER}/status`
+        )
+        if(status.data.status === 'ok') {
+          this.faucet_status_color = 'green'
+          this.faucet_status = 'Operational'
+          return
+        }
+      } catch (error) {
+        this.faucet_status_color = 'red'
+        this.faucet_status = 'Down'
+        return
+      }
+
+      this.faucet_status_color = 'red'
+      this.faucet_status = 'Down'
+      return
+    },
+
+    async handle_interval (promise, interval) {
+      while(true) {
+        await new Promise(resolve => setTimeout(resolve, interval))
+        await promise
+      }
+    },
   }
 }
 </script>
@@ -47,13 +200,45 @@ export default {
     align-items: center;
     width: 100%;
     height: 100%;
+    padding-top: 50px;
     padding-bottom: 50px;
+  }
+  .statustextcol {
+    display: inline-flex;
+    align-items:center;
+  }
+  .statustextcol i {
+    margin-top: -1px;
+  }
+  /*  */
+  #header {
+    /* position: sticky;
+    top:0; */
+    width: 100%;
+    display: block;
+    background: rgba(48,48,48,0.8);
+    padding:20px 0 10px 0;
+    z-index: 100;
+  }
+  .flex_contheader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width:100%;
+  }
+  .statusheader {
+    padding-right: 15px;
+    width: 250px;
+  }
+  .statusheaderleft {
+    width: 250px;
   }
   .mainimglogo {
     width:150px;
-    padding:30px 0 0 20px;
     display: block;
+    padding-left: 15px;
   }
+  /*  */
   .pagefooter {
     width: 100%;
     display: block;
@@ -90,19 +275,62 @@ export default {
       font-style: normal;
       color: #00c6ab;
   }
+  .select_chain {
+    max-width: 225px;
+  }
+  .faucetcompstatus {
+    margin-top: -15px;
+  }
+  .mobilestatusdiv {
+    display: none;
+  }
   @media only screen and (max-width: 992px) {
     .social-links svg {
       width: 30px;
       height: 30px;
     }
+    .mainimglogo{
+      width: 120px;
+      margin: 0 auto;
+    }
+    .statusheader {
+      width: auto;
+    }
+    .statusheaderleft {
+      width: auto;
+    }
+    .desktopstatusdiv {
+      display: none;
+    }
+    .mobilestatusdiv {
+      display: block;
+      width:100px;
+    }
   }
   @media only screen and (max-width: 756px) {
     .mainimglogo{
-      width: 150px;
+      width: 100px;
       margin: 0 auto;
+    }
+    .testnetheader {
+      font-size: 30px;
+    }
+    .mobilestatusdiv {
+      display: block;
     }
    }
   @media only screen and (max-width: 576px) {
+    .mobilestatusdiv {
+      display:block;
+      width:60px;
+    }
+    .mainimglogo{
+      width: 80px;
+      margin: 0;
+    }
+    .testnetheader {
+      font-size: 24px;
+    }
     .bgdarkopacity {
       width: 100%;
       min-width: auto;
@@ -114,6 +342,9 @@ export default {
   @media only screen and (max-width: 480px) {
     .social-links__icon {
       padding: 0.7rem 0.4rem 0.2rem 0.4rem;
+    }
+    .mobilestatusdiv {
+      display: block;
     }
   }
 </style>
