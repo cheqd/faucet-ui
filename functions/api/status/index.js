@@ -14,7 +14,7 @@ export async function onRequest(context) {
       },
       distributors: info.distributors
     },
-    refill_needed: !( Math.floor( info.holder.balance / CHEQD_CURRENT_AMOUNT_GIVEN ) > 1 ) && info.distributors.filter( (v) => { return Math.floor( v.balance[0].amount / CHEQD_CURRENT_AMOUNT_GIVEN ) > 1 } ).length < 2
+    refill_needed: !( Math.floor( Number( info.holder.balance[0].amount ) / CHEQD_CURRENT_AMOUNT_GIVEN ) > 1 ) && info.distributors.filter( (v) => { return Math.floor( Number( v.balance[0].amount ) / CHEQD_CURRENT_AMOUNT_GIVEN ) >= 1 } ).length < 2 ,
   }
 
   return new Response( JSON.stringify( processed ) )
