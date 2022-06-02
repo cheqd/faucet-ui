@@ -1,4 +1,4 @@
-# cheqd-faucet-ui
+# cheqd Testnet Faucet UI
 
 ## Build Setup
 
