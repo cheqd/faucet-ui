@@ -1,6 +1,9 @@
 {
   "name": "cheqd-faucet-ui",
   "version": "1.0.0",
+  "licence": "Apache-2.0",
+  "author": "Cheqd Foundation Limited (https://github.com/cheqd)",
+  "repository": "git://github.com/cheqd/faucet-ui.git",
   "private": true,
   "scripts": {
     "dev": "nuxt",
