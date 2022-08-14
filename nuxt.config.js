@@ -6,8 +6,8 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: 'cheqd Testnet Faucet',
-    title: 'cheqd Testnet Faucet',
+    titleTemplate: 'SCRT Testnet Faucet',
+    title: 'SCRT Testnet Faucet',
     htmlAttrs: {
       lang: 'en'
     },
@@ -18,7 +18,7 @@ export default {
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/secret-favicon.png' }
     ]
   },
 
@@ -46,7 +46,7 @@ export default {
     ],
     [
       '@nuxtjs/recaptcha', {
-        siteKey: '6Lfvc08dAAAAAFYxguVoURPuBLzt6wXccJLmltI8',
+        siteKey: '6Le48s8gAAAAAARXiic-8jpgfXj9WZphXDvqnbl3',
         version: 'v2'
       },
     ]
@@ -64,8 +64,8 @@ export default {
           secondary: colors.amber.darken3,
           info: colors.teal.lighten1,
           warning: colors.amber.base,
-          error: colors.deepOrange.accent4,
-          success: colors.green.accent3
+          error: colors.red.base,
+          success: colors.green.accent4
         }
       }
     }

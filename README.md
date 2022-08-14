@@ -1,4 +1,4 @@
-# cheqd Testnet Faucet UI
+# SCRT Testnet Faucet UI
 
 ## Build Setup
 

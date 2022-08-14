@@ -1,4 +1,4 @@
-export const CHEQD_FAUCET_SERVER = process.env.CF_CHEQD_FAUCET_SERVER || 'https://faucet-api.cheqd.network'
-export const CHEQD_MINIMAL_DENOM = process.env.CF_CHEQD_MINIMAL_DENOM || 'ncheq'
-export const CHEQD_CURRENT_AMOUNT_GIVEN = process.env.CF_CHEQD_CURRENT_AMOUNT_GIVEN || 5000000000000000
-export const DEFAULT_TESTING_ADDRESS = process.env.CF_DEFAULT_TESTING_ADDRESS || 'cheqd12248whff96tpfyqm2vyvf9k4wda9h2dhdkf2e4'
+export const FAUCET_SERVER = process.env.FAUCET_SERVER || 'https://faucetbe.pulsar.scrttestnet.com'
+export const MINIMAL_DENOM = process.env.MINIMAL_DENOM || 'uscrt'
+export const CURRENT_AMOUNT_GIVEN = process.env.CURRENT_AMOUNT_GIVEN || 1000000000
+export const DEFAULT_TESTING_ADDRESS = process.env.DEFAULT_TESTING_ADDRESS || 'secret12345'

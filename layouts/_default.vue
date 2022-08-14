@@ -57,7 +57,7 @@
         <v-icon>mdi-menu</v-icon>
       </v-btn>
     </v-app-bar> -->
-    <img class="mainimglogo" src="../assets/img/cheqd-Logo-White.png" alt="logo"/>
+    <img class="mainimglogo" src="../assets/img/secret-logo.png" alt="logo"/>
     <v-main>
       <v-container class="maincontainer">
         <Nuxt />
@@ -119,9 +119,7 @@ export default {
 </script>
 <style scoped>
   .vappbackground {
-    background: url('../assets/img/Orange_Mobius_06.jpg');
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
+    background: rgb(43, 101, 56);
     font-family: 'Nunito', sans-serif;
   }
   .maincontainer {

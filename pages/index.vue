@@ -18,7 +18,7 @@
         :step="1"
       >
         <div class="txtdts text-center">
-          <p>If you are a developer looking to test the functionality of cheqd network or setting up a node on testnet, setting up a node on the cheqd test network, you can acquire <b>test</b> CHEQ tokens through this faucet.</p>
+          <p>If you are a developer looking to test the functionality of Secret Network or setting up a node, you can acquire <b>test</b> SCRT tokens through this faucet.</p>
         </div>
         <v-btn
           @click="step++"
@@ -37,7 +37,7 @@
         :complete="step > 2"
         editable
       >
-        Add your cheqd <b>testnet</b> Address
+        Add your secret <b>testnet</b> Address
         <v-tooltip
         top
         close-delay="2000"
@@ -51,7 +51,7 @@
               mdi-information-outline
             </v-icon>
           </template>
-          <span>Please enter your cheqd testnet wallet address which we'll use to transfer your test tokens.<br> To show the wallet address, follow the <a class="font-weight-bold" href="https://github.com/cheqd/cheqd-node/blob/main/docs/cheqd-cli/cheqd-cli-accounts.md" target="_blank">cheqd CLI guide on managing accounts (cheqd-noded keys list).</a><br> It should begin with "cheqd1".</span>
+          <span>Please enter your secret testnet wallet address which we'll use to transfer your test tokens.<br></span>
         </v-tooltip>
       </v-stepper-step>
 
@@ -72,7 +72,7 @@
           >
             <v-text-field
               v-model="address"
-              label="cheqd wallet Address"
+              label="secret wallet Address"
               :hint="`Example: ${DEFAULT_TESTING_ADDRESS}`"
               required
               class="col-12"
@@ -145,7 +145,7 @@
       class="mt-3"
       outlined
     >
-      <b>Done! Your requests tokens should have arrived at your provided address ({{ CHEQD_CURRENT_AMOUNT_GIVEN }} {{ CHEQD_MINIMAL_DENOM }}).</b>
+      <b>Done! Your requested tokens should have arrived at your provided address ({{ CURRENT_AMOUNT_GIVEN }} {{ MINIMAL_DENOM }}).</b>
     </v-alert>
     <v-alert
       icon="mdi-shield-lock-outline"
@@ -159,6 +159,19 @@
       outlined
     >
       <b>Server is unreachable at the moment. Kindly, try again later.</b>
+    </v-alert>
+    <v-alert
+      icon="mdi-shield-lock-outline"
+      prominent
+      dismissible
+      text
+      type="error"
+      v-model="error_too_many_requests"
+      transition="scale-transition"
+      class="mt-3"
+      outlined
+    >
+      <b>Too many request for the same address. Blocked to prevent draining. Please wait 24h and try it again!</b>
     </v-alert>
     <v-alert
       icon="mdi-shield-lock-outline"
@@ -191,7 +204,7 @@
 
 <script>
 
-import { CHEQD_FAUCET_SERVER, CHEQD_MINIMAL_DENOM, CHEQD_CURRENT_AMOUNT_GIVEN, DEFAULT_TESTING_ADDRESS } from '../constants/constants'
+import { FAUCET_SERVER, MINIMAL_DENOM, CURRENT_AMOUNT_GIVEN, DEFAULT_TESTING_ADDRESS } from '../constants/constants'
 
 export default {
   data: () => {
@@ -203,13 +216,14 @@ export default {
       success: false,
       error: false,
       error_non_existing_address: false,
+      error_too_many_requests: false,
       error_recaptcha: false,
       address_rules: [
         value => !!value||`Required.\n Example: ${DEFAULT_TESTING_ADDRESS}`,
-        value => /^(cheqd)1[a-z0-9]{38}$/.test(value)||'Invalid cheqd address format.'
+        value => /^(secret)1[a-z0-9]{38}$/.test(value)||'Invalid secret address format.'
       ],
-      CHEQD_MINIMAL_DENOM,
-      CHEQD_CURRENT_AMOUNT_GIVEN,
+      MINIMAL_DENOM,
+      CURRENT_AMOUNT_GIVEN,
       DEFAULT_TESTING_ADDRESS
     }
   },
@@ -222,7 +236,7 @@ export default {
               : false
     },
 
-    async handle_auto_dismiss (prop, interval=4000) {
+    async handle_auto_dismiss (prop, interval=1000000) {
       return setTimeout(() => {return this[prop] = !this[prop]}, interval)
     },
 
@@ -250,24 +264,32 @@ export default {
         return this.handle_auto_dismiss('success')
       }
 
+      if(status && status.error ** status.error.includes("Too many requests")) return this.error_too_many_requests = true;
+
       this.error = true
       return this.handle_auto_dismiss('error')
     },
 
     async handle_fetch () {
-      try {
-        const response = await this.$axios.post(
-          `${CHEQD_FAUCET_SERVER}/credit`,
+      const status = await this.$axios.post(
+          `${FAUCET_SERVER}/credit`,
           {
-            denom: CHEQD_MINIMAL_DENOM,
+            denom: MINIMAL_DENOM,
             address: this.address || DEFAULT_TESTING_ADDRESS
           }
         )
-        return response
-      } catch (error) {
-        return false
+        .then(function (response) {
+          console.log(response);
+          return response
+        }).catch(function (error) {
+          if (error.response) {
+            const status = {error: error.response.data};
+            return status
+          }
+          return false
+        });
+      return status;
       }
-    }
   }
 }
 
