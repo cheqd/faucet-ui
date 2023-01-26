@@ -145,8 +145,8 @@ export default {
       title: 'cheqd Testnet faucet',
       faucet_status: '',
       faucet_status_color: 'green',
-      items: ['cheqd-testnet-5'],
-      selected: 'cheqd-testnet-5',
+      items: ['cheqd-testnet-6'],
+      selected: 'cheqd-testnet-6',
       dialog: false
     }
   },
