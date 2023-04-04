@@ -2,7 +2,7 @@
 
 [![GitHub license](https://img.shields.io/github/license/cheqd/faucet-ui?color=blue&style=flat-square)](https://github.com/cheqd/faucet-ui/blob/main/LICENSE) [![GitHub contributors](https://img.shields.io/github/contributors/cheqd/faucet-ui?label=contributors%20%E2%9D%A4%EF%B8%8F&style=flat-square)](https://github.com/cheqd/faucet-ui/graphs/contributors)
 
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/cheqd/faucet-ui/dispatch.yml?label=workflows&style=flat-square)](https://github.com/cheqd/faucet-ui/actions/workflows/dispatch.yml) [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/cheqd/faucet-ui/codeql.yml?label=CodeQL&style=flat-square)](https://github.com/cheqd/faucet-ui/actions/workflows/codeql.yml) ![GitHub repo size](https://img.shields.io/github/repo-size/cheqd/faucet-ui?style=flat-square)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/cheqd/faucet-ui/dispatch.yml?label=workflows&style=flat-square)](https://github.com/cheqd/faucet-ui/actions/workflows/dispatch.yml) ![GitHub repo size](https://img.shields.io/github/repo-size/cheqd/faucet-ui?style=flat-square)
 
 ## Build Setup
 
