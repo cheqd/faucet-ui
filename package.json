@@ -23,7 +23,7 @@
     "vue-server-renderer": "^2.7.14",
     "vue-template-compiler": "^2.7.14",
     "vuetify": "^2.6.15",
-    "webpack": "^4.46.0"
+    "webpack": "^5.1.1"
   },
   "devDependencies": {
     "@nuxtjs/vuetify": "^1.12.3"
