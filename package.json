@@ -9,7 +9,8 @@
     "dev": "nuxt",
     "build": "nuxt build",
     "start": "nuxt start",
-    "generate": "nuxt generate"
+    "generate": "nuxt generate",
+    "format": "prettier --write '**/*.{js,ts,cjs,mjs,vue}'"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.13.6",
@@ -26,6 +27,19 @@
   },
   "devDependencies": {
     "@nuxtjs/vuetify": "^1.12.3",
-    "nuxt": "^3.0.0"
+    "@typescript-eslint/eslint-plugin": "^6.13.1",
+    "@typescript-eslint/parser": "^6.13.1",
+    "eslint": "^8.54.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-config-typescript": "^3.0.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "eslint-plugin-prettier-vue": "^5.0.0",
+    "eslint-plugin-vue": "^9.18.1",
+    "nuxt": "^3.0.0",
+    "prettier": "^3.1.0",
+    "prettier-plugin-vue": "^1.1.6"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
