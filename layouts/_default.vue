@@ -1,6 +1,6 @@
 <template>
-	<v-app class="vappbackground">
-		<!-- <v-navigation-drawer
+  <v-app class="vappbackground">
+    <!-- <v-navigation-drawer
       v-model="drawer"
       :mini-variant="miniVariant"
       :clipped="clipped"
@@ -24,7 +24,7 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer> -->
-		<!-- <v-app-bar
+    <!-- <v-app-bar
       :clipped-left="clipped"
       fixed
       app
@@ -57,13 +57,13 @@
         <v-icon>mdi-menu</v-icon>
       </v-btn>
     </v-app-bar> -->
-		<img class="mainimglogo" src="../assets/img/cheqd-Logo-White.png" alt="logo" />
-		<v-main>
-			<v-container class="maincontainer">
-				<Nuxt />
-			</v-container>
-		</v-main>
-		<!-- <v-navigation-drawer
+    <img class="mainimglogo" src="../assets/img/cheqd-Logo-White.png" alt="logo"/>
+    <v-main>
+      <v-container class="maincontainer">
+        <Nuxt />
+      </v-container>
+    </v-main>
+    <!-- <v-navigation-drawer
       v-model="rightDrawer"
       :right="right"
       temporary
@@ -80,42 +80,45 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer> -->
-		<v-footer :absolute="!fixed" app>
-			<span>&copy; {{ new Date().getFullYear() }}</span>
-		</v-footer>
-	</v-app>
+    <v-footer
+      :absolute="!fixed"
+      app
+    >
+      <span>&copy; {{ new Date().getFullYear() }}</span>
+    </v-footer>
+  </v-app>
 </template>
 
 <script>
 export default {
-	name: 'DefaultLayout',
-	data() {
-		return {
-			clipped: false,
-			drawer: false,
-			fixed: false,
-			items: [
-				{
-					icon: 'mdi-apps',
-					title: 'Welcome',
-					to: '/',
-				},
-				{
-					icon: 'mdi-chart-bubble',
-					title: 'Inspire',
-					to: '/inspire',
-				},
-			],
-			miniVariant: false,
-			right: true,
-			rightDrawer: false,
-			title: 'Vuetify.js',
-		};
-	},
-};
+  name: 'DefaultLayout',
+  data () {
+    return {
+      clipped: false,
+      drawer: false,
+      fixed: false,
+      items: [
+        {
+          icon: 'mdi-apps',
+          title: 'Welcome',
+          to: '/'
+        },
+        {
+          icon: 'mdi-chart-bubble',
+          title: 'Inspire',
+          to: '/inspire'
+        }
+      ],
+      miniVariant: false,
+      right: true,
+      rightDrawer: false,
+      title: 'Vuetify.js'
+    }
+  }
+}
 </script>
 <style scoped>
-.vappbackground {
+  .vappbackground {
     background: url('../assets/img/Orange_Mobius_06.jpg');
     background-repeat: no-repeat;
     background-size: 100% 100%;
