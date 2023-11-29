@@ -1,0 +1,4 @@
+.github
+.nuxt
+dist
+node_modules
