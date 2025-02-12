@@ -39,7 +39,16 @@ export default defineNuxtConfig({
 	modules: ['@nuxtjs/turnstile'],
 
 	turnstile: {
+		siteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY,
 		addValidateEndpoint: true,
+	},
+
+	runtimeConfig: {
+		turnstile: {
+			// This can be overridden at runtime via the NUXT_TURNSTILE_SECRET_KEY
+			// environment variable.
+			secretKey: process.env.NUXT_TURNSTILE_SECRET_KEY,
+		}
 	},
 
 	serverHandlers: [
