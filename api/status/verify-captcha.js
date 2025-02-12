@@ -1,5 +1,4 @@
 import { defineEventHandler, readBody } from "h3";
-import { verifyTurnstileToken } from "@nuxtjs/turnstile";
 
 export default defineEventHandler(async (event) => {
   const { token } = await readBody(event)
