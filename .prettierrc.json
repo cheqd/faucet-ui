@@ -7,5 +7,6 @@
 	"singleQuote": true,
 	"trailingComma": "es5",
 	"plugins": ["prettier-plugin-vue"],
+	"vueIndentScriptAndStyle": true,
 	"overrides": [{ "files": "*.vue", "options": { "parser": "vue" } }]
 }
