@@ -15,21 +15,21 @@
   "dependencies": {
     "@nuxtjs/turnstile": "^0.9.12",
     "axios": "^1.7.9",
-    "body-parser": "^2.0.2",
+    "body-parser": "^2.1.0",
     "buffer": "^6.0.3",
-    "core-js": "^3.38.0",
-    "express": "^4.21.1",
+    "core-js": "^3.40.0",
+    "express": "^4.21.2",
     "node-fetch": "^3.3.2",
     "nuxi": "^3.21.1",
     "vue": "^3.5.13",
-    "vuetify": "^3.7.11",
+    "vuetify": "^3.7.12",
     "webpack": "^4.47.0"
   },
   "devDependencies": {
     "@mdi/font": "^7.4.47",
     "@vue/compiler-sfc": "^3.5.13",
     "nuxt": "^3.15.4",
-    "prettier": "^3.3.1",
+    "prettier": "^3.5.0",
     "prettier-plugin-vue": "^1.1.6"
   },
   "engines": {
