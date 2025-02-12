@@ -28,6 +28,14 @@ jobs:
         with:
           fetch-depth: 0 # Required to fetch version
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Clean install dependencies
+        run: npm ci
+
       - name: Run Super Linter
         uses: github/super-linter/slim@v7
         env:
