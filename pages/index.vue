@@ -103,7 +103,7 @@
 						<v-container class="d-flex flex-column align-center justify-center">
 							<NuxtTurnstile v-model="token" class="center" />
 							<v-btn
-								:disabled="!turnstileToken"
+								:disabled="!token"
 								@click="validate"
 								depressed
 								color="#FE5000"
@@ -194,7 +194,7 @@ export default {
 		error: false,
 		error_non_existing_address: false,
 		error_turnstile: false,
-		turnstileToken: '',
+		token: '',
 		address_rules: [
 			(value) => !!value || `Required.\n Example: ${DEFAULT_TESTING_ADDRESS}`,
 			(value) => /^(cheqd)1[a-z0-9]{38}$/.test(value) || 'Invalid cheqd address format.',
