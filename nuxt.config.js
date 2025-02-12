@@ -1,74 +1,66 @@
-import colors from 'vuetify/es5/util/colors';
+import { defineNuxtConfig } from 'nuxt/config';
 
-export default {
-	// Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
+export default defineNuxtConfig({
 	ssr: false,
 
-	// Global page headers: https://go.nuxtjs.dev/config-head
-	head: {
-		titleTemplate: 'cheqd Testnet Faucet',
-		title: 'cheqd Testnet Faucet',
-		htmlAttrs: {
-			lang: 'en',
+	app: {
+		head: {
+			titleTemplate: 'cheqd Testnet Faucet',
+			title: 'cheqd Testnet Faucet',
+			htmlAttrs: {
+				lang: 'en',
+			},
+			meta: [
+				{ charset: 'utf-8' },
+				{ name: 'viewport', content: 'width=device-width, initial-scale=1' },
+				{ hid: 'description', name: 'description', content: '' },
+				{ name: 'format-detection', content: 'telephone=no' },
+			],
+			link: [
+				{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+				{
+					rel: 'stylesheet',
+					href: 'https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css',
+				},
+			],
 		},
-		meta: [
-			{ charset: 'utf-8' },
-			{ name: 'viewport', content: 'width=device-width, initial-scale=1' },
-			{ hid: 'description', name: 'description', content: '' },
-			{ name: 'format-detection', content: 'telephone=no' },
-		],
-		link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
 	},
 
-	// Global CSS: https://go.nuxtjs.dev/config-css
-	css: [],
+	css: ['vuetify/lib/styles/main.css'],
 
-	// Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-	plugins: [],
+	build: {
+		transpile: ['vuetify'],
+	},
 
-	// Auto import components: https://go.nuxtjs.dev/config-components
 	components: true,
 
-	// Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
-	buildModules: [
-		// https://go.nuxtjs.dev/vuetify
-		'@nuxtjs/vuetify',
-	],
+	buildModules: ['vuetify'],
 
-	// Modules: https://go.nuxtjs.dev/config-modules
-	modules: [
-		['@nuxtjs/axios'],
-		[
-			'@nuxtjs/recaptcha',
-			{
-				siteKey: '6Lfvc08dAAAAAFYxguVoURPuBLzt6wXccJLmltI8',
-				version: 'v2',
-			},
-		],
-	],
+	modules: ['@nuxtjs/turnstile'],
 
-	// Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
-	vuetify: {
-		customVariables: ['~/assets/variables.scss'],
-		theme: {
-			dark: true,
-			themes: {
-				dark: {
-					primary: '#FE5000',
-					accent: colors.grey.darken3,
-					secondary: colors.amber.darken3,
-					info: colors.teal.lighten1,
-					warning: colors.amber.base,
-					error: colors.deepOrange.accent4,
-					success: colors.green.accent3,
-				},
-			},
+	turnstile: {
+		siteKey: '0x4AAAAAAA7fUBLsoUwk_pGi',
+		addValidateEndpoint: true,
+	},
+
+	runtimeConfig: {
+		turnstile: {
+			// This can be overridden at runtime via the NUXT_TURNSTILE_SECRET_KEY
+			// environment variable.
+			secretKey: '0x4AAAAAAA7fUFQ5DPQRNWiibhf1gfW0Ppk',
 		},
 	},
 
-	// Build Configuration: https://go.nuxtjs.dev/config-build
-	build: {},
+	serverHandlers: [
+		{
+			route: '/api/status',
+			handler: '~/api/status/index.js',
+		},
+		{
+			route: '/api/verify-captcha',
+			handler: '~/api/status/verify-captcha.js',
+		},
+	],
 
-	// Server Middleware config
-	serverMiddleware: [{ path: '/api/status', handler: '~/api/status/index.js' }],
-};
+	compatibilityDate: '2025-02-04',
+});

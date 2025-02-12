@@ -1,28 +1,35 @@
 <template>
 	<v-app class="vappbackground">
-		<v-header id="header">
+		<header id="header">
 			<div class="flex_contheader">
 				<div class="statusheaderleft">
 					<img class="mainimglogo" src="../assets/img/cheqd-Logo-White.png" alt="logo" />
 				</div>
+				<v-spacer></v-spacer>
 				<h1 class="testnetheader">Testnet Faucet</h1>
+				<v-spacer></v-spacer>
 				<div class="statusheader">
 					<div class="desktopstatusdiv">
 						<v-select
 							class="select_chain mr-3"
 							v-model="selected"
 							:items="items"
-							outlined
+							variant="outlined"
 							label="Chain ID"
+							theme="dark"
+							item-color="#FE5000"
+							role="listbox"
 						></v-select>
 						<div class="faucetcompstatus">
 							<h4 style="font-weight: 300">
 								Faucet Status:
 								<span class="statustextcol">
 									<span style="margin-right: 3px">{{ faucet_status }}</span>
-									<v-tooltip top>
-										<template v-slot:activator="{ on, attrs }">
-											<v-icon v-bind="attrs" v-on="on" small color="green"> mdi-circle </v-icon>
+									<v-tooltip location="top" close-delay="2000">
+										<template v-slot:activator="{ attrs }">
+											<v-icon v-bind="attrs" size="x-small" :color="faucet_status_color">
+												mdi-circle
+											</v-icon>
 										</template>
 										<span>{{ faucet_status }}</span>
 									</v-tooltip>
@@ -32,62 +39,68 @@
 					</div>
 					<!--  -->
 					<div class="mobilestatusdiv">
-						<template>
-							<div class="text-center">
-								<v-dialog v-model="dialog" width="auto">
-									<template v-slot:activator="{ on, attrs }">
-										<v-btn icon color="white" v-bind="attrs" v-on="on">
-											<v-icon>mdi-information-outline</v-icon>
-										</v-btn>
-									</template>
+						<div class="text-center">
+							<v-dialog v-model="dialog" width="auto">
+								<template v-slot:activator="{ props }">
+									<v-btn icon color="white" small v-bind="props">
+										<v-icon>mdi-information-outline</v-icon>
+									</v-btn>
+								</template>
 
-									<v-card>
-										<v-card-title class="text-h5 lighten-2"> </v-card-title>
+								<v-card>
+									<v-card-title class="text-h5 lighten-2"> </v-card-title>
 
-										<v-card-text class="mt-2">
-											<div class="faucetcompstatus">
-												<v-select
-													class="select_chain mr-3"
-													v-model="selected"
-													:items="items"
-													outlined
-													label="Chain ID"
-												></v-select>
-												<h4 style="font-weight: 300">
-													Faucet Status:
-													<span class="statustextcol">
-														<span style="margin-right: 3px">{{ faucet_status }}</span>
-														<v-tooltip top>
-															<template v-slot:activator="{ on, attrs }">
-																<v-icon v-bind="attrs" v-on="on" small color="green">
-																	mdi-circle
-																</v-icon>
-															</template>
-															<span>{{ faucet_status }}</span>
-														</v-tooltip>
-													</span>
-												</h4>
-											</div>
-										</v-card-text>
+									<v-card-text class="mt-2">
+										<div class="faucetcompstatus">
+											<v-select
+												class="select_chain mr-3"
+												v-model="selected"
+												:items="items"
+												variant="outlined"
+												label="Chain ID"
+												theme="dark"
+												item-color="#FE5000"
+												role="listbox"
+											></v-select>
+											<h4 style="font-weight: 300">
+												Faucet Status:
+												<span class="statustextcol">
+													<span style="margin-right: 3px">{{ faucet_status }}</span>
+													<v-tooltip top attach="body">
+														<template v-slot:activator="{ props }">
+															<v-icon
+																v-bind="props"
+																size="x-small"
+																:color="faucet_status_color"
+															>
+																mdi-circle
+															</v-icon>
+														</template>
+														<span>{{ faucet_status }}</span>
+													</v-tooltip>
+												</span>
+											</h4>
+										</div>
+									</v-card-text>
 
-										<v-divider></v-divider>
+									<v-divider></v-divider>
 
-										<v-card-actions>
-											<v-spacer></v-spacer>
-											<v-btn color="primary" text @click="dialog = false"> OK </v-btn>
-										</v-card-actions>
-									</v-card>
-								</v-dialog>
-							</div>
-						</template>
+									<v-card-actions>
+										<v-spacer></v-spacer>
+										<v-btn color="#FE5000" text @click="dialog = false"> OK </v-btn>
+									</v-card-actions>
+								</v-card>
+							</v-dialog>
+						</div>
 					</div>
+
 					<!--  -->
 				</div>
 			</div>
-		</v-header>
+		</header>
 		<v-main>
 			<v-container class="maincontainer">
-				<Nuxt />
+				<NuxtPage />
 			</v-container>
 		</v-main>
 		<v-footer class="pagefooter" relative>
@@ -168,6 +181,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import { CHEQD_FAUCET_SERVER } from '../constants/constants';
 
 export default {
@@ -177,7 +191,7 @@ export default {
 			fixed: false,
 			title: 'cheqd Testnet faucet',
 			faucet_status: '',
-			faucet_status_color: 'green',
+			faucet_status_color: 'white',
 			items: ['cheqd-testnet-6'],
 			selected: 'cheqd-testnet-6',
 			dialog: false,
@@ -190,7 +204,7 @@ export default {
 	methods: {
 		async handle_faucet_status() {
 			try {
-				const status = await this.$axios.get(`${CHEQD_FAUCET_SERVER}/status`);
+				const status = await axios.get(`${CHEQD_FAUCET_SERVER}/status`);
 				if (status.data.status === 'ok') {
 					this.faucet_status_color = 'green';
 					this.faucet_status = 'Operational';
@@ -218,10 +232,7 @@ export default {
 </script>
 <style scoped>
 .vappbackground {
-    background: url('../assets/img/Orange_Mobius_06.jpg');
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center center;
+	background: url('../assets/img/Orange_Mobius_06.jpg') center/cover no-repeat;
     font-family: 'Nunito', sans-serif;
   }
   .maincontainer {
