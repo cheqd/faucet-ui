@@ -1,9 +1,7 @@
-<template>
-	<img class="vuetify-logo" alt="Vuetify Logo" src="/vuetify-logo.svg" />
-</template>
+<template> <img class="vuetify-logo" alt="Vuetify Logo" src="/vuetify-logo.svg" /> </template>
 
 <style>
-.vuetify-logo {
+	.vuetify-logo {
   height: 180px;
   width: 180px;
   transform: rotateY(560deg);
@@ -16,3 +14,4 @@
   }
 }
 </style>
+
