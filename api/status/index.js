@@ -2,7 +2,7 @@ import { eventHandler } from 'h3';
 import fetch from 'node-fetch';
 import { CHEQD_FAUCET_SERVER, CHEQD_CURRENT_AMOUNT_GIVEN } from '../../constants/constants';
 
-export default eventHandler(async (req, res) => {
+export default eventHandler(async (res) => {
 	try {
 		const ping = await fetch(`${CHEQD_FAUCET_SERVER}/status`);
 		const info = await ping.json();
