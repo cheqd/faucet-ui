@@ -170,7 +170,7 @@
 							</g></svg></span
 				></a>
 			</div>
-			<p style="text-align: center; font-size: 18px">
+			<p style="text-align: center; font-size: 16px">
 				&copy; {{ new Date().getFullYear() }} cheqd - The network for authentic data |
 				<a href="https://www.cheqd.io/privacy-policy?hsLang=en" rel="noopener" target="_blank"
 					>Privacy policy</a
@@ -242,8 +242,8 @@ export default {
     align-items: center;
     width: 100%;
     height: 100%;
-    padding-top: 50px;
-    padding-bottom: 50px;
+    padding-top: 15px;
+    padding-bottom: 15px;
   }
   .statustextcol {
     display: inline-flex;
@@ -285,6 +285,7 @@ export default {
     width: 100%;
     display: block;
     background: rgba(48,48,48,0.8);
+    padding: 5px 0 8px 0;
   }
   .social-links {
     width: 100%;
@@ -292,13 +293,14 @@ export default {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    margin-bottom: 3px;
   }
   .social-links__icon {
       background-color: transparent;
       border-radius: 4px;
       display: inline-block;
       margin: 0 0.7rem 0.35rem 0;
-      padding: 0.7rem 0.7rem 0.2rem 0.7rem;
+      padding: 0.4rem 0.5rem 0.1rem 0.5rem;
       cursor: pointer;
   }
   .social-links svg {
@@ -388,5 +390,11 @@ export default {
     .mobilestatusdiv {
       display: block;
     }
+  }
+  .pagefooter p {
+    margin: 0;
+    padding: 3px 0;
+    font-size: 16px;
+    line-height: 1.2;
   }
 </style>

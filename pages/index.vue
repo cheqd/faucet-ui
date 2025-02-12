@@ -1,76 +1,93 @@
 <template>
-	<div>
+	<div class="faucet-container">
 		<v-stepper v-model="step" alt-labels class="bgdarkopacity" vertical linear>
 			<!-- Step 1: Instructions -->
 			<v-stepper-header>
-				<v-stepper-item class="stepiconfont" title="Instructions" :value="1" editable />
+				<v-stepper-item class="stepiconfont" title="Instructions" :value="1" :complete="step > 1" editable />
 			</v-stepper-header>
 
 			<v-stepper-window v-if="step === 1">
 				<v-stepper-window-item :value="1" class="d-flex flex-column align-center">
-					<div class="txtdts text-center mb-4">
-						<p>
-							If you are a developer looking to test the functionality of cheqd network or setting up a
-							node on testnet, setting up a node on the cheqd test network, you can acquire
-							<b>test</b> CHEQ tokens through this faucet.
-						</p>
-					</div>
-					<v-btn @click="step++" depressed color="#FE5000" class="d-block mx-auto centered">Start</v-btn>
+					<v-card flat class="pa-4">
+						<div class="text-center mb-4">
+							<p>
+								If you are a developer looking to test the functionality of cheqd network or setting up
+								a node on testnet, setting up a node on the cheqd test network, you can acquire
+								<b>test</b> CHEQ tokens through this faucet.
+							</p>
+						</div>
+						<v-btn
+							@click="step++"
+							:loading="loading"
+							color="#FE5000"
+							class="d-block mx-auto centered"
+							variant="elevated"
+						>
+							Start
+						</v-btn>
+					</v-card>
 				</v-stepper-window-item>
 			</v-stepper-window>
 
 			<!-- Step 2: Add cheqd Testnet Address -->
 			<v-stepper-header>
-				<v-stepper-item :value="2" editable>
+				<v-stepper-item :value="2" :complete="step > 2" editable>
 					<template v-slot:title>
-						<span class="d-flex align-center">
-							Add your cheqd testnet Address
-							<v-tooltip location="top" close-delay="2000">
+						<div class="d-flex align-center flex-wrap">
+							<span class="me-1">Add your cheqd testnet Address</span>
+							<v-tooltip location="top" :close-delay="2000" openOnClick persistent>
 								<template v-slot:activator="{ props }">
-									<v-icon v-bind="props" small>mdi-information-outline</v-icon>
+									<v-icon v-bind="props" size="small">mdi-information-outline</v-icon>
 								</template>
-								<span style="pointer-events: auto">
-									Please enter your cheqd testnet wallet address which we'll use to transfer your test
-									tokens.<br />
-									To show the wallet address, follow the
-									<a
-										class="font-weight-bold"
-										href="https://docs.cheqd.io/node/getting-started/cheqd-cli/cheqd-cli-key-management#listing-available-keys-on-a-node"
-									>
-										cheqd CLI guide on managing accounts (cheqd-noded keys list). </a
-									><br />
-									It should begin with "cheqd1".
-								</span>
+								<div class="pa-2 tooltip-content">
+									<p>
+										Please enter your cheqd testnet wallet address which we'll use to transfer your
+										test tokens.
+									</p>
+									<p>
+										To show the wallet address, follow the
+										<a
+											class="font-weight-bold text-decoration-none white--text"
+											href="https://docs.cheqd.io/node/getting-started/cheqd-cli/cheqd-cli-key-management#listing-available-keys-on-a-node"
+											target="_blank"
+											rel="noopener noreferrer"
+											@click.stop
+										>
+											cheqd CLI guide on managing accounts
+										</a>
+									</p>
+									<p>It should begin with "cheqd1".</p>
+								</div>
 							</v-tooltip>
-						</span>
+						</div>
 					</template>
 				</v-stepper-item>
 			</v-stepper-header>
 
 			<v-stepper-window v-if="step === 2">
 				<v-stepper-window-item :value="2">
-					<v-form ref="form" v-model="valid">
-						<v-col cols="12">
-							<v-card class="mb-12 col-auto" color="lighten-1">
-								<v-text-field
-									v-model="address"
-									label="cheqd wallet Address"
-									:hint="`Example: ${DEFAULT_TESTING_ADDRESS}`"
-									required
-									class="col-12"
-									:rules="address_rules"
-								/>
-							</v-card>
+					<v-form ref="form" v-model="valid" @submit.prevent="validate">
+						<v-card class="pa-4" variant="flat">
+							<v-text-field
+								v-model="address"
+								label="cheqd wallet Address"
+								:hint="`Example: ${DEFAULT_TESTING_ADDRESS}`"
+								persistent-hint
+								required
+								:rules="address_rules"
+								:loading="loading"
+							/>
 							<v-btn
-								:disabled="!valid"
+								:disabled="!valid || loading"
 								@click="validate"
-								depressed
 								color="#FE5000"
-								class="d-block mx-auto"
+								class="mt-4 d-block mx-auto"
+								:loading="loading"
+								variant="elevated"
 							>
 								Continue
 							</v-btn>
-						</v-col>
+						</v-card>
 					</v-form>
 				</v-stepper-window-item>
 			</v-stepper-window>
@@ -78,41 +95,39 @@
 
 			<!-- Step 3: Verification Challenge -->
 			<v-stepper-header>
-				<v-stepper-item :value="3">
+				<v-stepper-item :value="3" :complete="step > 3">
 					<template v-slot:title>
-						<span class="d-flex align-center">
-							Complete the captcha!
+						<div class="d-flex align-center flex-wrap">
+							<span class="me-1">Complete the captcha!</span>
 							<v-tooltip location="top" close-delay="2000">
 								<template v-slot:activator="{ props }">
-									<v-icon v-bind="props" small>mdi-information-outline</v-icon>
+									<v-icon v-bind="props" size="small">mdi-information-outline</v-icon>
 								</template>
-								<span
-									>Once you have completed this, we'll send you a notification with confirmation that
-									your tokens have been sent.</span
-								>
+								<span>Once completed, you'll receive a confirmation of your token transfer.</span>
 							</v-tooltip>
-						</span>
+						</div>
 					</template>
 				</v-stepper-item>
 			</v-stepper-header>
 
 			<v-stepper-window v-if="step === 3">
 				<v-stepper-window-item :value="3">
-					<v-form @submit.prevent="handle_submit">
-						<!-- Cloudflare Turnstile -->
-						<v-container class="d-flex flex-column align-center justify-center">
-							<NuxtTurnstile v-model="token" class="center" />
-							<v-btn
-								:disabled="!token"
-								@click="validate"
-								depressed
-								color="#FE5000"
-								class="d-block mx-auto"
-							>
-								Verify & Continue
-							</v-btn>
-						</v-container>
-					</v-form>
+					<v-card class="pa-4" variant="flat">
+						<v-form @submit.prevent="handle_submit">
+							<v-container class="d-flex flex-column align-center">
+								<NuxtTurnstile v-model="token" class="mb-4" />
+								<v-btn
+									:disabled="!token || loading"
+									@click="handle_submit"
+									color="#FE5000"
+									:loading="loading"
+									variant="elevated"
+								>
+									Verify & Submit
+								</v-btn>
+							</v-container>
+						</v-form>
+					</v-card>
 				</v-stepper-window-item>
 			</v-stepper-window>
 		</v-stepper>
@@ -178,10 +193,11 @@
 
 <script>
 import axios from 'axios';
-import { 
+import {
 	CHEQD_MINIMAL_DENOM,
 	CHEQD_CURRENT_AMOUNT_GIVEN,
-	DEFAULT_TESTING_ADDRESS
+	DEFAULT_TESTING_ADDRESS,
+	CHEQD_FAUCET_SERVER,
 } from '../constants/constants';
 
 export default {
@@ -210,9 +226,9 @@ export default {
 			return this.valid ? this.step++ : false;
 		},
 
-		async handle_auto_dismiss(prop, interval = 4000) {
+		handle_auto_dismiss(prop, interval = 4000) {
 			return setTimeout(() => {
-				return (this[prop] = !this[prop]);
+				this[prop] = false;
 			}, interval);
 		},
 
@@ -224,56 +240,58 @@ export default {
 			}
 
 			try {
-				const response = await axios.post('/api/verify-captcha', {
-					token: this.token,
-				});
+				const { data } = await axios.post('/api/verify-captcha', { token: this.token });
+				if (data.success) return true;
 
-				if (response.data.success) {
-					return true;
-				} else {
-					this.error_turnstile = true;
-					this.handle_auto_dismiss('error_turnstile');
-					return false;
-				}
+				this.error_turnstile = true;
+				this.handle_auto_dismiss('error_turnstile');
+				return false;
 			} catch (error) {
 				console.error('Turnstile verification failed', error);
 				this.error_turnstile = true;
-				this.handle_auto_dismiss('error_recaptcha');
+				this.handle_auto_dismiss('error_turnstile');
 				return false;
 			}
 		},
 
 		async handle_submit() {
+			if (this.loading) return;
 			this.loading = true;
 
-			const isValidCaptcha = await this.verifyCaptcha();
-			if (!isValidCaptcha) {
+			try {
+				const isValidCaptcha = await this.verifyCaptcha();
+				if (!isValidCaptcha) return;
+
+				const status = await this.handle_fetch();
+				if (!status) {
+					this.error_non_existing_address = true;
+					this.handle_auto_dismiss('error_non_existing_address');
+					return;
+				}
+				if (status.data === 'ok') {
+					this.success = true;
+					this.handle_auto_dismiss('success');
+				} else {
+					this.error = true;
+					this.handle_auto_dismiss('error');
+				}
+			} catch (error) {
+				console.error('Submission failed:', error);
+				this.error = true;
+				this.handle_auto_dismiss('error');
+			} finally {
 				this.loading = false;
-				return;
 			}
-
-			const status = await this.handle_fetch();
-			this.loading = false;
-
-			if (!status) return (this.error_non_existing_address = true);
-
-			if (status.data === 'ok') {
-				this.success = true;
-				return this.handle_auto_dismiss('success');
-			}
-
-			this.error = true;
-			return this.handle_auto_dismiss('error');
 		},
 
 		async handle_fetch() {
 			try {
-				const response = await axios.post(`${CHEQD_FAUCET_SERVER}/credit`, {
+				return await axios.post(`${CHEQD_FAUCET_SERVER}/credit`, {
 					denom: CHEQD_MINIMAL_DENOM,
 					address: this.address || DEFAULT_TESTING_ADDRESS,
 				});
-				return response;
 			} catch (error) {
+				console.error('Fetch failed:', error);
 				return false;
 			}
 		},
@@ -281,32 +299,62 @@ export default {
 };
 </script>
 <style scoped>
-div.bgdarkopacity {
-    background: rgba(48,48,48,0.9) !important;
-    width: 700px;
-    display: block;
-    margin: 0 auto;
-  }
-  .txtdts {
-    text-align: center;
-  }
-  .txtdts h1 {
-    font-style: normal;
-    font-weight: 300;
-    text-decoration: none;
-    /* color: #003b5c; */
-    font-size: 62px;
-    letter-spacing: 0px;
-    text-transform: none;
-  }
-  .v-tooltip__content {
-    pointer-events: auto;
-  }
-  :v-deep(.stepiconfont .v-stepper__step__step) {
-    font-size: 1.25rem;
-    height: 35px;
-    min-width: 35px;
-    width: 28px;
+.faucet-container {
+	max-width: 800px;
+	margin: 0 auto;
+	padding: 1rem;
+}
+.bgdarkopacity {
+	background: rgba(48, 48, 48, 0.9) !important;
+	width: 100%;
+	border-radius: 8px;
+}
+.v-tooltip__content {
+  pointer-events: auto;
+}
+/* Responsive styles */
+@media (max-width: 600px) {
+	.faucet-container {
+		padding: 0.5rem;
+	}
+
+	:deep(.v-stepper) {
+		width: 100%;
+	}
+
+	:deep(.v-stepper-header) {
+		flex-wrap: wrap;
+	}
+
+	:deep(.v-stepper-item) {
+		flex: 1 1 100%;
+	}
+}
+/* Stepper icon styling */
+:deep(.v-stepper-item .v-stepper-item__avatar) {
+    background-color: #FE5000 !important;
+    color: white !important;
+    width: 35px !important;
+    height: 35px !important;
+    font-size: 16px !important;
+}
+
+:deep(.v-stepper-item--complete .v-stepper-item__avatar) {
+    background-color: #FE5000 !important;
+}
+
+:deep(.v-stepper-item--active .v-stepper-item__avatar) {
+    background-color: #FE5000 !important;
+}
+
+:deep(.v-stepper-item--disabled .v-stepper-item__avatar) {
+    background-color: rgba(254, 80, 0, 0.7) !important;
+}
+:deep(.stepiconfont .v-stepper__step__step) {
+	font-size: 1.25rem;
+	height: 35px;
+	min-width: 35px;
+	width: 35px;
 	background-color: #FF5722;
 	color: white;
   }
@@ -353,4 +401,13 @@ div.bgdarkopacity {
       font-size: 26px;
     }
   }
+
+.tooltip-content a {
+    color: white !important;
+    text-decoration: underline !important;
+}
+
+.tooltip-content a:hover {
+    opacity: 0.8;
+}
 </style>
