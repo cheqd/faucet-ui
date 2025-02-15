@@ -1,4 +1,4 @@
-export const CHEQD_FAUCET_SERVER = process.env.CF_CHEQD_FAUCET_SERVER || 'https://faucet-api.cheqd.network';
+export const CHEQD_FAUCET_SERVER = process.env.CF_CHEQD_FAUCET_SERVER || 'http://localhost:4000';
 export const CHEQD_MINIMAL_DENOM = process.env.CF_CHEQD_MINIMAL_DENOM || 'ncheq';
 export const CHEQD_CURRENT_AMOUNT_GIVEN = process.env.CF_CHEQD_CURRENT_AMOUNT_GIVEN || 1000000000000000;
 export const DEFAULT_TESTING_ADDRESS =
