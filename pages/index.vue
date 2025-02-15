@@ -42,25 +42,20 @@
 									> <v-icon v-bind="props" size="small">mdi-information-outline</v-icon> </template
 								>
 								<div class="pa-2 tooltip-content">
-
+									<p>Please enter your cheqd testnet wallet address which we'll use to transfer your test tokens.</p>
 									<p>
-										 Please enter your cheqd testnet wallet address which we'll use to transfer your
-										test tokens.
-									</p>
-
-									<p>
-										 To show the wallet address, follow the <a
+										To show the wallet address, follow the 
+										<a
 											class="font-weight-bold text-decoration-none white--text"
 											href="https://docs.cheqd.io/node/getting-started/cheqd-cli/cheqd-cli-key-management#listing-available-keys-on-a-node"
 											target="_blank"
 											rel="noopener noreferrer"
 											@click.stop
-											> cheqd CLI guide on managing accounts </a
 										>
+											cheqd CLI guide on managing accounts
+										</a>
 									</p>
-
 									<p>It should begin with "cheqd1".</p>
-
 								</div>
 								 </v-tooltip
 							>
@@ -429,6 +424,10 @@
       font-size: 26px;
     }
   }
+
+.tooltip-content {
+    pointer-events: auto;
+}
 
 .tooltip-content a {
     color: white !important;
