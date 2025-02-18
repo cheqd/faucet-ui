@@ -78,6 +78,7 @@
 							/> <v-text-field
 								v-model="email"
 								label="Email Address"
+								type="email"
 								required
 								:rules="email_rules"
 							/> <v-text-field
@@ -221,7 +222,7 @@
 			],
 			email_rules: [
 				v => !!v || 'Email is required',
-				v => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(v) || 'Email must be valid'
+				v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'Email must be valid'
 			],
 			name_rules: [
 				v => !!v || 'Name is required',
