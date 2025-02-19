@@ -48,7 +48,7 @@ export default defineNuxtConfig({
 			// This can be overridden at runtime via the NUXT_TURNSTILE_SECRET_KEY
 			// environment variable.
 			secretKey: process.env.NUXT_TURNSTILE_SECRET_KEY,
-		}
+		},
 	},
 
 	serverHandlers: [

@@ -42,20 +42,25 @@
 									> <v-icon v-bind="props" size="small">mdi-information-outline</v-icon> </template
 								>
 								<div class="pa-2 tooltip-content">
-									<p>Please enter your cheqd testnet wallet address which we'll use to transfer your test tokens.</p>
+
 									<p>
-										To show the wallet address, follow the 
-										<a
+										Please enter your cheqd testnet wallet address which we'll use to transfer your
+										test tokens.
+									</p>
+
+									<p>
+										 To show the wallet address, follow the <a
 											class="font-weight-bold text-decoration-none white--text"
 											href="https://docs.cheqd.io/node/getting-started/cheqd-cli/cheqd-cli-key-management#listing-available-keys-on-a-node"
 											target="_blank"
 											rel="noopener noreferrer"
 											@click.stop
+											> cheqd CLI guide on managing accounts </a
 										>
-											cheqd CLI guide on managing accounts
-										</a>
 									</p>
+
 									<p>It should begin with "cheqd1".</p>
+
 								</div>
 								 </v-tooltip
 							>
@@ -81,15 +86,8 @@
 								type="email"
 								required
 								:rules="email_rules"
-							/> <v-text-field
-								v-model="name"
-								label="Full Name"
-								required
-								:rules="name_rules"
-							/> <v-text-field
-								v-model="company"
-								label="Company/Organisation (Optional)"
-							/> <v-checkbox
+							/> <v-text-field v-model="name" label="Full Name" required :rules="name_rules" />
+							<v-text-field v-model="company" label="Company/Organisation (Optional)" /> <v-checkbox
 								v-model="marketingOptin"
 								label="Subscribe to receive newsletter, updates and promotional communications"
 							/> <v-btn
@@ -221,12 +219,12 @@
 				(value) => /^(cheqd)1[a-z0-9]{38}$/.test(value) || 'Invalid cheqd address format.',
 			],
 			email_rules: [
-				v => !!v || 'Email is required',
-				v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'Email must be valid'
+				(v) => !!v || 'Email is required',
+				(v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'Email must be valid',
 			],
 			name_rules: [
-				v => !!v || 'Name is required',
-				v => v.length >= 2 || 'Name must be at least 2 characters'
+				(v) => !!v || 'Name is required',
+				(v) => v.length >= 2 || 'Name must be at least 2 characters',
 			],
 			CHEQD_MINIMAL_DENOM,
 			CHEQD_CURRENT_AMOUNT_GIVEN,
@@ -309,7 +307,7 @@
 						email: this.email,
 						name: this.name,
 						marketing_optin: this.marketingOptin,
-						...(this.company && { company: this.company })
+						...(this.company && { company: this.company }),
 					};
 
 					return await axios.post(`${CHEQD_FAUCET_SERVER}/credit`, requestBody);

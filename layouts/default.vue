@@ -127,6 +127,7 @@
 								></path>
 
 							</g>
+
 						</svg></span
 					></a
 				> <a href="https://twitter.com/cheqd_io" class="social-links__icon" target="_blank"
@@ -148,6 +149,7 @@
 								></path>
 
 							</g>
+
 						</svg></span
 					></a
 				> <a href="https://www.linkedin.com/company/cheqd-identity" class="social-links__icon" target="_blank"
@@ -169,6 +171,7 @@
 								></path>
 
 							</g>
+
 						</svg></span
 					></a
 				> <a href="https://github.com/cheqd" class="social-links__icon" target="_blank"
@@ -190,6 +193,7 @@
 								></path>
 
 							</g>
+
 						</svg></span
 					></a
 				>
