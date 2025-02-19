@@ -44,7 +44,7 @@
 								<div class="pa-2 tooltip-content">
 
 									<p>
-										 Please enter your cheqd testnet wallet address which we'll use to transfer your
+										Please enter your cheqd testnet wallet address which we'll use to transfer your
 										test tokens.
 									</p>
 
@@ -80,6 +80,16 @@
 								required
 								:rules="address_rules"
 								:loading="loading"
+							/> <v-text-field
+								v-model="email"
+								label="Email Address"
+								type="email"
+								required
+								:rules="email_rules"
+							/> <v-text-field v-model="name" label="Full Name" required :rules="name_rules" />
+							<v-text-field v-model="company" label="Company/Organisation (Optional)" /> <v-checkbox
+								v-model="marketingOptin"
+								label="Subscribe to receive newsletter, updates and promotional communications"
 							/> <v-btn
 								:disabled="!valid || loading"
 								@click="validate"
@@ -200,9 +210,21 @@
 			error_non_existing_address: false,
 			error_turnstile: false,
 			token: '',
+			email: '',
+			name: '',
+			company: '',
+			marketingOptin: false,
 			address_rules: [
 				(value) => !!value || `Required.\n Example: ${DEFAULT_TESTING_ADDRESS}`,
 				(value) => /^(cheqd)1[a-z0-9]{38}$/.test(value) || 'Invalid cheqd address format.',
+			],
+			email_rules: [
+				(v) => !!v || 'Email is required',
+				(v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'Email must be valid',
+			],
+			name_rules: [
+				(v) => !!v || 'Name is required',
+				(v) => v.length >= 2 || 'Name must be at least 2 characters',
 			],
 			CHEQD_MINIMAL_DENOM,
 			CHEQD_CURRENT_AMOUNT_GIVEN,
@@ -249,7 +271,10 @@
 
 				try {
 					const isValidCaptcha = await this.verifyCaptcha();
-					if (!isValidCaptcha) return;
+					if (!isValidCaptcha) {
+						this.loading = false;
+						return;
+					}
 
 					const status = await this.handle_fetch();
 					if (!status) {
@@ -257,7 +282,8 @@
 						this.handle_auto_dismiss('error_non_existing_address');
 						return;
 					}
-					if (status.data === 'ok') {
+
+					if (status.data.status === 'ok') {
 						this.success = true;
 						this.handle_auto_dismiss('success');
 					} else {
@@ -275,10 +301,16 @@
 
 			async handle_fetch() {
 				try {
-					return await axios.post(`${CHEQD_FAUCET_SERVER}/credit`, {
+					const requestBody = {
 						denom: CHEQD_MINIMAL_DENOM,
 						address: this.address || DEFAULT_TESTING_ADDRESS,
-					});
+						email: this.email,
+						name: this.name,
+						marketing_optin: this.marketingOptin,
+						...(this.company && { company: this.company }),
+					};
+
+					return await axios.post(`${CHEQD_FAUCET_SERVER}/credit`, requestBody);
 				} catch (error) {
 					console.error('Fetch failed:', error);
 					return false;
@@ -392,6 +424,10 @@
     }
   }
 
+.tooltip-content {
+    pointer-events: auto;
+}
+
 .tooltip-content a {
     color: white !important;
     text-decoration: underline !important;
@@ -399,6 +435,16 @@
 
 .tooltip-content a:hover {
     opacity: 0.8;
+}
+
+/* Add some spacing between form fields */
+.v-text-field {
+    margin-bottom: 8px;
+}
+
+/* Style the checkbox */
+:deep(.v-checkbox) {
+    margin-top: 16px;
 }
 </style>
 
