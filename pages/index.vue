@@ -12,11 +12,9 @@
 						<div class="text-center mb-4">
 
 							<p class="text-body-1 text-center mx-auto" style="max-width: 600px">
-								 If you are a developer looking to test the functionality of cheqd network or setting up
-								a node on testnet, setting up a node on the cheqd test network, you can acquire
-								<b>test</b> CHEQ tokens through this faucet. Note that you can use this faucet only <b
-									>once an hour</b
-								>.
+								 If you are a developer looking to develop oncheqd network or setting up a node on
+								testnet, you can acquire testnet CHEQ tokens through this faucet. <b>Note:</b> A given
+								wallet address can be topped up only <b>once an hour</b>.
 							</p>
 
 						</div>
@@ -25,14 +23,14 @@
 							color="secondary"
 							class="mb-4 d-block mx-auto"
 							:loading="suggesting"
-							> Add Cheqd Testnet to Leap Wallet </v-btn
+							> Add cheqd Testnet to Leap Wallet </v-btn
 						> <v-btn
 							@click="step++"
 							:loading="loading"
 							color="#FE5000"
 							class="d-block mx-auto centered"
 							variant="elevated"
-							> Skip </v-btn
+							> Skip and continue </v-btn
 						> </v-card
 					> </v-stepper-window-item
 				> </v-stepper-window
@@ -51,10 +49,7 @@
 								>
 								<div class="pa-2 tooltip-content">
 
-									<p>
-										 Please enter your cheqd testnet wallet address which we'll use to transfer your
-										test tokens.
-									</p>
+									<p> Please enter cheqd testnet wallet address to send testnet CHEQ tokens to. </p>
 
 									<p>
 										 To show the wallet address, follow the <a
@@ -118,7 +113,7 @@
 							/> <v-text-field v-model="name" label="Full Name" required :rules="name_rules" />
 							<v-text-field v-model="company" label="Company/Organisation (Optional)" /> <v-checkbox
 								v-model="marketingOptin"
-								label="Subscribe to receive newsletter, updates and promotional communications"
+								label="Subscribe to receive our newsletter and product updates"
 							/>
 							<div class="d-flex justify-center my-4">
 								 <NuxtTurnstile v-model="token" class="mb-4" />
@@ -147,7 +142,7 @@
 			class="mt-3"
 			outlined
 			> <b
-				>Done! Your requests tokens should have arrived at your provided address ({{
+				>Done! Testnet CHEQ tokens should be sent to your wallet address shortly. ({{
 					CHEQD_CURRENT_AMOUNT_GIVEN
 				}} {{ CHEQD_MINIMAL_DENOM }}).</b
 			> </v-alert
@@ -161,7 +156,7 @@
 			transition="scale-transition"
 			class="mt-3"
 			outlined
-			> <b>Server is unreachable at the moment. Kindly, try again later.</b> </v-alert
+			> <b>Server is unreachable at the moment. Please try again later.</b> </v-alert
 		> <v-alert
 			icon="mdi-shield-lock-outline"
 			prominent
@@ -183,7 +178,7 @@
 			transition="scale-transition"
 			class="mt-3"
 			outlined
-			> <b>You haven't passed the captcha verification challenge yet.</b> </v-alert
+			> <b>You haven't passed the CAPTCHA verification challenge yet.</b> </v-alert
 		> <v-alert
 			icon="mdi-wallet-outline"
 			prominent
@@ -194,7 +189,7 @@
 			transition="scale-transition"
 			class="mt-3"
 			outlined
-			> <b>cheqd Testnet successfully added to Leap!</b> </v-alert
+			> <b>cheqd Testnet successfully added to Leap Wallet!</b> </v-alert
 		> <v-alert
 			icon="mdi-wallet-outline"
 			prominent
@@ -205,7 +200,10 @@
 			transition="scale-transition"
 			class="mt-3"
 			outlined
-			> <b>Failed to add cheqd Testnet to Leap. Please try again.</b> </v-alert
+			> <b
+				>Failed to add cheqd Testnet to Leap Wallet. Please try again or skip if you already know your wallet
+				address.</b
+			> </v-alert
 		> <v-alert
 			icon="mdi-wallet-outline"
 			prominent
