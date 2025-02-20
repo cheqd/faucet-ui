@@ -23,6 +23,13 @@ export default defineNuxtConfig({
 					href: 'https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css',
 				},
 			],
+			script: [
+				{
+					defer: true,
+					'data-domain': 'testnet-faucet.cheqd.io',
+					src: 'https://plausible.io/js/script.js',
+				},
+			],
 		},
 	},
 

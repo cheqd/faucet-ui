@@ -2,9 +2,6 @@
 	 <v-app class="vappbackground"
 		>
 		<header id="header">
-			<!-- Plausible Analytics -->
-			<script defer data-domain="testnet-faucet.cheqd.io" src="https://plausible.io/js/script.js"></script>
-			<!-- End Plausible Analytics -->
 			<div class="flex_contheader">
 
 				<div class="statusheaderleft">
