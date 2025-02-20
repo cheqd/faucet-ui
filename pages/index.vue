@@ -11,29 +11,37 @@
 						>
 						<div class="text-center mb-4">
 
-							<p>
+							<p class="text-body-1 text-center mx-auto" style="max-width: 600px">
 								 If you are a developer looking to test the functionality of cheqd network or setting up
 								a node on testnet, setting up a node on the cheqd test network, you can acquire
-								<b>test</b> CHEQ tokens through this faucet.
+								<b>test</b> CHEQ tokens through this faucet. Note that you can use this faucet only <b
+									>once an hour</b
+								>.
 							</p>
 
 						</div>
 						 <v-btn
+							@click="suggestCheqdTestnet"
+							color="secondary"
+							class="mb-4 d-block mx-auto"
+							:loading="suggesting"
+							> Add Cheqd Testnet to Leap Wallet </v-btn
+						> <v-btn
 							@click="step++"
 							:loading="loading"
 							color="#FE5000"
 							class="d-block mx-auto centered"
 							variant="elevated"
-							> Start </v-btn
+							> Skip </v-btn
 						> </v-card
 					> </v-stepper-window-item
 				> </v-stepper-window
-			> <!-- Step 2: Add cheqd Testnet Address --> <v-stepper-header
+			> <!-- Step 2: Form --> <v-stepper-header
 				> <v-stepper-item :value="2" :complete="step > 2" editable
 					> <template v-slot:title
 						>
 						<div class="d-flex align-center flex-wrap">
-							 <span class="me-1">Add your cheqd testnet Address</span> <v-tooltip
+							 <span class="me-1">Fill in your details</span> <v-tooltip
 								location="top"
 								:close-delay="2000"
 								openOnClick
@@ -44,7 +52,7 @@
 								<div class="pa-2 tooltip-content">
 
 									<p>
-										Please enter your cheqd testnet wallet address which we'll use to transfer your
+										 Please enter your cheqd testnet wallet address which we'll use to transfer your
 										test tokens.
 									</p>
 
@@ -59,7 +67,12 @@
 										>
 									</p>
 
-									<p>It should begin with "cheqd1".</p>
+									<p> It should begin with "cheqd1".</p>
+
+									<p>
+										 You can also copy it directly from Leap Wallet extension or just press the
+										Wallet button inside cheqd wallet address field.
+									</p>
 
 								</div>
 								 </v-tooltip
@@ -74,13 +87,29 @@
 						> <v-card class="pa-4" variant="flat"
 							> <v-text-field
 								v-model="address"
-								label="cheqd wallet Address"
+								label="Cheqd Wallet Address"
 								:hint="`Example: ${DEFAULT_TESTING_ADDRESS}`"
 								persistent-hint
 								required
 								:rules="address_rules"
 								:loading="loading"
-							/> <v-text-field
+								> <template v-slot:append-inner
+									> <v-tooltip text="Copy address from Leap Wallet"
+										> <template v-slot:activator="{ props }"
+											> <v-btn
+												icon="mdi-wallet"
+												color="#FE5000"
+												variant="text"
+												size="medium"
+												v-bind="props"
+												@click="getAddressFromLeap"
+												:loading="loadingAddress"
+											></v-btn
+											> </template
+										> </v-tooltip
+									> </template
+								> </v-text-field
+							> <v-text-field
 								v-model="email"
 								label="Email Address"
 								type="email"
@@ -90,50 +119,20 @@
 							<v-text-field v-model="company" label="Company/Organisation (Optional)" /> <v-checkbox
 								v-model="marketingOptin"
 								label="Subscribe to receive newsletter, updates and promotional communications"
-							/> <v-btn
-								:disabled="!valid || loading"
-								@click="validate"
+							/>
+							<div class="d-flex justify-center my-4">
+								 <NuxtTurnstile v-model="token" class="mb-4" />
+							</div>
+							 <v-btn
+								:disabled="!valid || !token || loading"
+								@click="handle_submit"
 								color="#FE5000"
 								class="mt-4 d-block mx-auto"
 								:loading="loading"
 								variant="elevated"
-								> Continue </v-btn
+								> Submit </v-btn
 							> </v-card
 						> </v-form
-					> </v-stepper-window-item
-				> </v-stepper-window
-			> <v-divider></v-divider> <!-- Step 3: Verification Challenge --> <v-stepper-header
-				> <v-stepper-item :value="3" :complete="step > 3"
-					> <template v-slot:title
-						>
-						<div class="d-flex align-center flex-wrap">
-							 <span class="me-1">Complete the captcha!</span> <v-tooltip
-								location="top"
-								close-delay="2000"
-								> <template v-slot:activator="{ props }"
-									> <v-icon v-bind="props" size="small">mdi-information-outline</v-icon> </template
-								> <span>Once completed, you'll receive a confirmation of your token transfer.</span>
-								</v-tooltip
-							>
-						</div>
-						 </template
-					> </v-stepper-item
-				> </v-stepper-header
-			> <v-stepper-window v-if="step === 3"
-				> <v-stepper-window-item :value="3"
-					> <v-card class="pa-4" variant="flat"
-						> <v-form @submit.prevent="handle_submit"
-							> <v-container class="d-flex flex-column align-center"
-								> <NuxtTurnstile v-model="token" class="mb-4" /> <v-btn
-									:disabled="!token || loading"
-									@click="handle_submit"
-									color="#FE5000"
-									:loading="loading"
-									variant="elevated"
-									> Verify & Submit </v-btn
-								> </v-container
-							> </v-form
-						> </v-card
 					> </v-stepper-window-item
 				> </v-stepper-window
 			> </v-stepper
@@ -185,6 +184,75 @@
 			class="mt-3"
 			outlined
 			> <b>You haven't passed the captcha verification challenge yet.</b> </v-alert
+		> <v-alert
+			icon="mdi-wallet-outline"
+			prominent
+			dismissible
+			text
+			type="success"
+			v-model="leap_success"
+			transition="scale-transition"
+			class="mt-3"
+			outlined
+			> <b>cheqd Testnet successfully added to Leap!</b> </v-alert
+		> <v-alert
+			icon="mdi-wallet-outline"
+			prominent
+			dismissible
+			text
+			type="error"
+			v-model="leap_error"
+			transition="scale-transition"
+			class="mt-3"
+			outlined
+			> <b>Failed to add cheqd Testnet to Leap. Please try again.</b> </v-alert
+		> <v-alert
+			icon="mdi-wallet-outline"
+			prominent
+			dismissible
+			text
+			type="warning"
+			v-model="leap_not_installed"
+			transition="scale-transition"
+			class="mt-3"
+			outlined
+			>
+			<div>
+				 <b>Leap Wallet extension is not installed.</b>
+				<p class="mb-0 mt-2">
+					 Please install Leap Wallet from <a
+						href="https://www.leapwallet.io/download"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="font-weight-bold"
+						>leapwallet.io</a
+					>
+				</p>
+
+			</div>
+			 </v-alert
+		> <v-alert
+			icon="mdi-wallet-outline"
+			prominent
+			dismissible
+			text
+			type="info"
+			v-model="leap_already_added"
+			transition="scale-transition"
+			class="mt-3"
+			outlined
+			> <b>cheqd Testnet is already added to your Leap Wallet!</b> </v-alert
+		> <v-alert
+			icon="mdi-clock-outline"
+			prominent
+			dismissible
+			text
+			type="warning"
+			v-model="error_rate_limit"
+			transition="scale-transition"
+			class="mt-3"
+			outlined
+			> <b>Rate limit exceeded for this wallet address. Please try again in an hour.</b> </v-alert
 		>
 	</div>
 
@@ -229,6 +297,13 @@
 			CHEQD_MINIMAL_DENOM,
 			CHEQD_CURRENT_AMOUNT_GIVEN,
 			DEFAULT_TESTING_ADDRESS,
+			suggesting: false,
+			loadingAddress: false,
+			leap_success: false,
+			leap_error: false,
+			leap_not_installed: false,
+			leap_already_added: false,
+			error_rate_limit: false,
 		}),
 
 		methods: {
@@ -272,18 +347,20 @@
 				try {
 					const isValidCaptcha = await this.verifyCaptcha();
 					if (!isValidCaptcha) {
+						this.error_turnstile = true;
+						this.handle_auto_dismiss('error_turnstile'); //obrisi
 						this.loading = false;
 						return;
 					}
 
 					const status = await this.handle_fetch();
-					if (!status) {
+					if (status === 429) {
+						this.error_rate_limit = true;
+						this.handle_auto_dismiss('error_rate_limit');
+					} else if (!status) {
 						this.error_non_existing_address = true;
 						this.handle_auto_dismiss('error_non_existing_address');
-						return;
-					}
-
-					if (status.data.status === 'ok') {
+					} else if (status.data.status === 'ok') {
 						this.success = true;
 						this.handle_auto_dismiss('success');
 					} else {
@@ -292,8 +369,13 @@
 					}
 				} catch (error) {
 					console.error('Submission failed:', error);
-					this.error = true;
-					this.handle_auto_dismiss('error');
+					if (error.response?.status === 429) {
+						this.error_rate_limit = true;
+						this.handle_auto_dismiss('error_rate_limit');
+					} else {
+						this.error = true;
+						this.handle_auto_dismiss('error');
+					}
 				} finally {
 					this.loading = false;
 				}
@@ -313,7 +395,111 @@
 					return await axios.post(`${CHEQD_FAUCET_SERVER}/credit`, requestBody);
 				} catch (error) {
 					console.error('Fetch failed:', error);
+					if (error.response?.status === 429) {
+						return 429;
+					}
 					return false;
+				}
+			},
+
+			async suggestCheqdTestnet() {
+				if (!window.leap) {
+					this.leap_not_installed = true;
+					this.handle_auto_dismiss('leap_not_installed');
+					return;
+				}
+
+				this.suggesting = true;
+
+				try {
+					await window.leap.getKey('cheqd-testnet-6');
+					this.leap_already_added = true;
+					this.handle_auto_dismiss('leap_already_added');
+					this.suggesting = false;
+					return;
+				} catch (error) {
+					try {
+						await window.leap.experimentalSuggestChain({
+							chainId: 'cheqd-testnet-6',
+							chainName: 'cheqd Testnet',
+							rest: 'https://api.cheqd.network',
+							rpc: 'https://rpc.cheqd.network',
+							bip44: {
+								coinType: 118,
+							},
+							bech32Config: {
+								bech32PrefixAccAddr: 'cheqd',
+								bech32PrefixAccPub: 'cheqdpub',
+								bech32PrefixValAddr: 'cheqdvaloper',
+								bech32PrefixValPub: 'cheqdvaloperpub',
+								bech32PrefixConsAddr: 'cheqdvalcons',
+								bech32PrefixConsPub: 'cheqdvalconspub',
+							},
+							currencies: [
+								{
+									coinDenom: 'CHEQ',
+									coinMinimalDenom: 'ncheq',
+									coinDecimals: 9,
+									coinGeckoId: 'cheqd-network',
+								},
+							],
+							feeCurrencies: [
+								{
+									coinDenom: 'CHEQ',
+									coinMinimalDenom: 'ncheq',
+									coinDecimals: 9,
+									coinGeckoId: 'cheqd-network',
+									gasPriceStep: {
+										low_gas_price: 5000,
+										average_gas_price: 7500,
+										high_gas_price: 10000,
+									},
+								},
+							],
+							stakeCurrency: {
+								coinDenom: 'CHEQ',
+								coinMinimalDenom: 'ncheq',
+								coinDecimals: 9,
+								coinGeckoId: 'cheqd-network',
+							},
+							image: 'https://raw.githubusercontent.com/cosmos/chain-registry/refs/heads/master/cheqd/images/cheq.svg',
+							theme: {
+								primaryColor: '#FE5000',
+								gradient:
+									'linear-gradient(180deg, rgba(254, 80, 0, 0.32) 0%, rgba(254, 80, 0, 0) 100%)',
+							},
+						});
+
+						this.leap_success = true;
+						this.handle_auto_dismiss('leap_success');
+					} catch (suggestError) {
+						console.error('Failed to suggest chain:', suggestError);
+						this.leap_error = true;
+						this.handle_auto_dismiss('leap_error');
+					}
+				} finally {
+					this.suggesting = false;
+				}
+			},
+
+			async getAddressFromLeap() {
+				if (!window.leap) {
+					this.leap_not_installed = true;
+					this.handle_auto_dismiss('leap_not_installed');
+					return;
+				}
+				this.loadingAddress = true;
+				try {
+					const [account] = await window.leap.getOfflineSigner('cheqd-testnet-6').getAccounts();
+					if (account?.address) {
+						this.address = account.address;
+					}
+				} catch (error) {
+					console.error('Failed to get address from Leap:', error);
+					this.leap_error = true;
+					this.handle_auto_dismiss('leap_error');
+				} finally {
+					this.loadingAddress = false;
 				}
 			},
 		},
@@ -445,6 +631,15 @@
 /* Style the checkbox */
 :deep(.v-checkbox) {
     margin-top: 16px;
+}
+
+.v-alert a {
+    color: inherit;
+    text-decoration: underline;
+}
+
+.v-alert a:hover {
+    opacity: 0.8;
 }
 </style>
 
