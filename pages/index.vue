@@ -12,7 +12,7 @@
 						<div class="text-center mb-4">
 
 							<p class="text-body-1 text-center mx-auto" style="max-width: 600px">
-								 If you are a developer looking to develop oncheqd network or setting up a node on
+								 If you are a developer looking to develop on cheqd network or setting up a node on
 								testnet, you can acquire testnet CHEQ tokens through this faucet. <b>Note:</b> A given
 								wallet address can be topped up only <b>once an hour</b>.
 							</p>
@@ -509,6 +509,8 @@
 	max-width: 800px;
 	margin: 0 auto;
 	padding: 1rem;
+	width: 100%;
+	box-sizing: border-box;
 }
 .bgdarkopacity {
 	background: rgba(48, 48, 48, 0.9) !important;
