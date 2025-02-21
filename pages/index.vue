@@ -509,6 +509,8 @@
 	max-width: 800px;
 	margin: 0 auto;
 	padding: 1rem;
+	width: 100%;
+	box-sizing: border-box;
 }
 .bgdarkopacity {
 	background: rgba(48, 48, 48, 0.9) !important;
