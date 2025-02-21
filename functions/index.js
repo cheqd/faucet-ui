@@ -1,3 +1,5 @@
+import './utils/axiosConfig';
+
 //
 // Add your custom directory structure as documented:
 // ├── ...
