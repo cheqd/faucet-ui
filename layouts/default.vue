@@ -6,7 +6,7 @@
 			<div class="flex_contheader">
 
 				<div class="statusheaderleft">
-					 <img class="mainimglogo" src="../assets/img/cheqd-Logo-White.png" alt="logo" />
+					 <img class="mainimglogo" src="../assets/img/cheqd-Logo-Horizontal-White.png" alt="logo" />
 				</div>
 				 <v-spacer></v-spacer>
 				<h1 class="testnetheader">Testnet Faucet</h1>

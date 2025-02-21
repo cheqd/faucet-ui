@@ -55,7 +55,7 @@
       >
         <v-icon>mdi-menu</v-icon>
       </v-btn>
-    </v-app-bar> --> <img class="mainimglogo" src="../assets/img/cheqd-Logo-White.png" alt="logo" /> <v-main
+    </v-app-bar> --> <img class="mainimglogo" src="../assets/img/cheqd-Logo-Horizontal-White.png" alt="logo" /> <v-main
 			> <v-container class="maincontainer"> <NuxtPage /> </v-container> </v-main
 		> <!-- <v-navigation-drawer
       v-model="rightDrawer"
