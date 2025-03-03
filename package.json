@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@nuxtjs/turnstile": "^0.9.12",
-    "axios": "^1.7.9",
+    "axios": "^1.8.1",
     "body-parser": "^2.1.0",
     "buffer": "^6.0.3",
     "core-js": "^3.40.0",
