@@ -17,7 +17,7 @@
     "axios": "^1.7.9",
     "body-parser": "^2.1.0",
     "buffer": "^6.0.3",
-    "core-js": "^3.40.0",
+    "core-js": "^3.42.0",
     "express": "^4.21.2",
     "node-fetch": "^3.3.2",
     "nuxi": "^3.22.2",
