@@ -69,7 +69,6 @@ export async function handleVerifyOtp(vm) {
 		});
 
 		if (response.data.status === 'ok' || response.status === 200) {
-			vm.emailVerificationToken = response.data.token || response.data.verification_token || null;
 			vm.otpVerified = true;
 			vm.step = 3;
 		} else {
@@ -151,7 +150,6 @@ export async function handleFetch(vm) {
 			last_name: vm.lastName,
 			marketing_optin: vm.marketingOptin,
 			...(vm.company && { company: vm.company }),
-			...(vm.emailVerificationToken && { verification_token: vm.emailVerificationToken }),
 		};
 
 		return await axios.post('/api/credit', requestBody);

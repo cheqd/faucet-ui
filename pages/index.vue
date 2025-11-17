@@ -161,7 +161,6 @@
 			lastName: '',
 			company: '',
 			marketingOptin: false,
-			emailVerificationToken: null,
 			turnstileToken: '',
 			error_turnstile: false,
 			address_rules: [
