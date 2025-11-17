@@ -67,6 +67,18 @@ export default defineNuxtConfig({
 			route: '/api/verify-captcha',
 			handler: '~/api/status/verify-captcha.js',
 		},
+		{
+			route: '/api/email/request-otp',
+			handler: '~/api/email/request-otp.js',
+		},
+		{
+			route: '/api/email/verify-otp',
+			handler: '~/api/email/verify-otp.js',
+		},
+		{
+			route: '/api/credit',
+			handler: '~/api/credit.js',
+		},
 	],
 
 	compatibilityDate: '2025-02-04',
