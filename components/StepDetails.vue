@@ -52,7 +52,7 @@
 					</template>
 				</v-text-field>
 				<v-btn
-					:disabled="loading"
+					:disabled="loading || !formValid"
 					@click="submit"
 					color="#FE5000"
 					class="mt-4 d-block mx-auto"
