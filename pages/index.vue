@@ -2,40 +2,42 @@
 
 	<div class="faucet-container">
 		 <v-stepper v-model="step" alt-labels class="bgdarkopacity" vertical linear
-			> <!-- Step 1: Instructions --> <v-stepper-header
-				> <v-stepper-item class="stepiconfont" title="Instructions" :value="1" :complete="step > 1" editable />
+			> <!-- Step 1: Email and Privacy Policy --> <v-stepper-header
+				> <v-stepper-item class="stepiconfont" title="Email Verification" :value="1" :complete="step > 1" :editable="false" />
 				</v-stepper-header
-			> <v-stepper-window v-if="step === 1"
-				> <v-stepper-window-item :value="1" class="d-flex flex-column align-center"
-					> <v-card flat class="pa-4"
+		> <v-stepper-window v-if="step === 1">
+				<StepEmail
+					v-model:email="email"
+					v-model:privacy-policy-accepted="privacyPolicyAccepted"
+					v-model:marketing-optin="marketingOptin"
+					v-model:turnstile-token="turnstileToken"
+					:loading="loadingOtp"
+					:email-rules="email_rules"
+					:privacy-rules="privacy_rules"
+					@request-otp="handle_request_otp"
+				/>
+			</v-stepper-window
+		> <!-- Step 2: OTP Verification --> <v-stepper-header
+				> <v-stepper-item :value="2" :complete="step > 2" :editable="false"
+					> <template v-slot:title
 						>
-						<div class="text-center mb-4">
-
-							<p class="text-body-1 text-center mx-auto" style="max-width: 600px">
-								 If you are a developer looking to develop on cheqd network or setting up a node on
-								testnet, you can acquire testnet CHEQ tokens through this faucet. <b>Note:</b> A given
-								wallet address can be topped up only <b>once an hour</b>.
-							</p>
-
+						<div class="d-flex align-center flex-wrap">
+							 <span class="me-1">Verify OTP</span>
 						</div>
-						 <v-btn
-							@click="suggestCheqdTestnet"
-							color="secondary"
-							class="mb-4 d-block mx-auto"
-							:loading="suggesting"
-							> Add cheqd Testnet to Leap Wallet </v-btn
-						> <v-btn
-							@click="step++"
-							:loading="loading"
-							color="#FE5000"
-							class="d-block mx-auto centered"
-							variant="elevated"
-							> Skip and continue </v-btn
-						> </v-card
-					> </v-stepper-window-item
-				> </v-stepper-window
-			> <!-- Step 2: Form --> <v-stepper-header
-				> <v-stepper-item :value="2" :complete="step > 2" editable
+					</template
+					> </v-stepper-item
+				> </v-stepper-header
+			> <v-stepper-window v-if="step === 2">
+				<StepOtp
+					:email="email"
+					v-model:otp="otp"
+					:otp-rules="otp_rules"
+					:loading="loadingOtp"
+					@verify-otp="handle_verify_otp"
+				/>
+			</v-stepper-window
+		> <!-- Step 3: User Details --> <v-stepper-header
+				> <v-stepper-item :value="3" :editable="false"
 					> <template v-slot:title
 						>
 						<div class="d-flex align-center flex-wrap">
@@ -65,7 +67,7 @@
 									<p> It should begin with "cheqd1".</p>
 
 									<p>
-										 You can also copy it directly from Leap Wallet extension or just press the
+										You can also copy it directly from Leap Wallet extension or just press the
 										Wallet button inside cheqd wallet address field.
 									</p>
 
@@ -76,188 +78,60 @@
 						 </template
 					> </v-stepper-item
 				> </v-stepper-header
-			> <v-stepper-window v-if="step === 2"
-				> <v-stepper-window-item :value="2"
-					> <v-form ref="form" v-model="valid" @submit.prevent="validate"
-						> <v-card class="pa-4" variant="flat"
-							> <v-text-field
-								v-model="address"
-								label="Cheqd Wallet Address"
-								:hint="`Example: ${DEFAULT_TESTING_ADDRESS}`"
-								persistent-hint
-								required
-								:rules="address_rules"
-								:loading="loading"
-								> <template v-slot:append-inner
-									> <v-tooltip text="Copy address from Leap Wallet"
-										> <template v-slot:activator="{ props }"
-											> <v-btn
-												icon="mdi-wallet"
-												color="#FE5000"
-												variant="text"
-												size="medium"
-												v-bind="props"
-												@click="getAddressFromLeap"
-												:loading="loadingAddress"
-											></v-btn
-											> </template
-										> </v-tooltip
-									> </template
-								> </v-text-field
-							> <v-text-field
-								v-model="email"
-								label="Email Address"
-								type="email"
-								required
-								:rules="email_rules"
-							/> <v-text-field v-model="name" label="Full Name" required :rules="name_rules" />
-							<v-text-field v-model="company" label="Company/Organisation (Optional)" /> <v-checkbox
-								v-model="marketingOptin"
-								label="Subscribe to receive our newsletter and product updates"
-							/>
-							<div class="d-flex justify-center my-4">
-								 <NuxtTurnstile v-model="token" class="mb-4" />
-							</div>
-							 <v-btn
-								:disabled="!valid || !token || loading"
-								@click="handle_submit"
-								color="#FE5000"
-								class="mt-4 d-block mx-auto"
-								:loading="loading"
-								variant="elevated"
-								> Submit </v-btn
-							> </v-card
-						> </v-form
-					> </v-stepper-window-item
-				> </v-stepper-window
+			> <v-stepper-window v-if="step === 3">
+				<StepDetails
+					v-model:first-name="firstName"
+					v-model:last-name="lastName"
+					v-model:company="company"
+					v-model:address="address"
+					:first-name-rules="firstName_rules"
+					:last-name-rules="lastName_rules"
+					:address-rules="address_rules"
+					:default-address="DEFAULT_TESTING_ADDRESS"
+					:loading="loading"
+					:loading-address="loadingAddress"
+					:suggesting="suggesting"
+					@submit="handle_submit"
+					@copy-address="getAddressFromLeap"
+					@suggest-leap="suggestCheqdTestnet"
+				/>
+			</v-stepper-window
 			> </v-stepper
-		> <v-alert
-			icon="mdi-shield-lock-outline"
-			prominent
-			dismissible
-			text
-			type="success"
-			v-model="success"
-			transition="scale-transition"
-			class="mt-3"
-			outlined
-			> <b
-				>Done! Testnet CHEQ tokens should be sent to your wallet address shortly. ({{
-					CHEQD_CURRENT_AMOUNT_GIVEN
-				}} {{ CHEQD_MINIMAL_DENOM }}).</b
-			> </v-alert
-		> <v-alert
-			icon="mdi-shield-lock-outline"
-			prominent
-			dismissible
-			text
-			type="error"
-			v-model="error"
-			transition="scale-transition"
-			class="mt-3"
-			outlined
-			> <b>Server is unreachable at the moment. Please try again later.</b> </v-alert
-		> <v-alert
-			icon="mdi-shield-lock-outline"
-			prominent
-			dismissible
-			text
-			type="info"
-			v-model="error_non_existing_address"
-			transition="scale-transition"
-			class="mt-3"
-			outlined
-			> <b>Address is not in the expected format for this chain or does not exist.</b> </v-alert
-		> <v-alert
-			icon="mdi-shield-lock-outline"
-			prominent
-			dismissible
-			text
-			type="warning"
-			v-model="error_turnstile"
-			transition="scale-transition"
-			class="mt-3"
-			outlined
-			> <b>You haven't passed the CAPTCHA verification challenge yet.</b> </v-alert
-		> <v-alert
-			icon="mdi-wallet-outline"
-			prominent
-			dismissible
-			text
-			type="success"
-			v-model="leap_success"
-			transition="scale-transition"
-			class="mt-3"
-			outlined
-			> <b>cheqd Testnet successfully added to Leap Wallet!</b> </v-alert
-		> <v-alert
-			icon="mdi-wallet-outline"
-			prominent
-			dismissible
-			text
-			type="error"
-			v-model="leap_error"
-			transition="scale-transition"
-			class="mt-3"
-			outlined
-			> <b
-				>Failed to add cheqd Testnet to Leap Wallet. Please try again or skip if you already know your wallet
-				address.</b
-			> </v-alert
-		> <v-alert
-			icon="mdi-wallet-outline"
-			prominent
-			dismissible
-			text
-			type="warning"
-			v-model="leap_not_installed"
-			transition="scale-transition"
-			class="mt-3"
-			outlined
-			>
-			<div>
-				 <b>Leap Wallet extension is not installed.</b>
-				<p class="mb-0 mt-2">
-					 Please install Leap Wallet from <a
-						href="https://www.leapwallet.io/download"
-						target="_blank"
-						rel="noopener noreferrer"
-						class="font-weight-bold"
-						>leapwallet.io</a
-					>
-				</p>
-
-			</div>
-			 </v-alert
-		> <v-alert
-			icon="mdi-wallet-outline"
-			prominent
-			dismissible
-			text
-			type="info"
-			v-model="leap_already_added"
-			transition="scale-transition"
-			class="mt-3"
-			outlined
-			> <b>cheqd Testnet is already added to your Leap Wallet!</b> </v-alert
-		> <v-alert
-			icon="mdi-clock-outline"
-			prominent
-			dismissible
-			text
-			type="warning"
-			v-model="error_rate_limit"
-			transition="scale-transition"
-			class="mt-3"
-			outlined
-			> <b>Rate limit exceeded for this wallet address. Please try again in an hour.</b> </v-alert
-		>
+		> <FaucetAlerts
+			v-model:success="success"
+			v-model:error="error"
+			v-model:error-non-existing-address="error_non_existing_address"
+			v-model:error-turnstile="error_turnstile"
+			v-model:error-otp-request="error_otp_request"
+			v-model:error-otp-verify="error_otp_verify"
+			v-model:otp-sent="otp_sent"
+			v-model:leap-success="leap_success"
+			v-model:leap-error="leap_error"
+			v-model:leap-copy-error="leap_copy_error"
+			v-model:leap-not-installed="leap_not_installed"
+			v-model:leap-already-added="leap_already_added"
+			v-model:error-rate-limit="error_rate_limit"
+			:amount-given="CHEQD_CURRENT_AMOUNT_GIVEN"
+			:denom="CHEQD_MINIMAL_DENOM"
+		/>
 	</div>
 
 </template>
 
 <script>
-	import axios from 'axios';
+	import FaucetAlerts from '~/components/FaucetAlerts.vue';
+	import StepEmail from '~/components/StepEmail.vue';
+	import StepOtp from '~/components/StepOtp.vue';
+	import StepDetails from '~/components/StepDetails.vue';
+	import {
+		verifyTurnstile as verifyTurnstileHelper,
+		handleRequestOtp,
+		handleVerifyOtp,
+		handleSubmit as handleSubmitHelper,
+		handleFetch as handleFetchHelper,
+		suggestCheqdTestnet as suggestCheqdTestnetHelper,
+		getAddressFromLeap as getAddressFromLeapHelper,
+	} from '~/helpers/faucetActions';
 	import {
 		CHEQD_MINIMAL_DENOM,
 		CHEQD_CURRENT_AMOUNT_GIVEN,
@@ -266,20 +140,29 @@
 	} from '../constants/constants';
 
 	export default {
+		components: { StepEmail, StepOtp, StepDetails, FaucetAlerts },
 		data: () => ({
 			step: 1,
 			address: null,
-			valid: false,
 			loading: false,
+			loadingOtp: false,
 			success: false,
 			error: false,
 			error_non_existing_address: false,
-			error_turnstile: false,
-			token: '',
+			error_otp_request: false,
+			error_otp_verify: false,
+			otp_sent: false,
 			email: '',
-			name: '',
+			otp: '',
+			privacyPolicyAccepted: false,
+			otpRequested: false,
+			otpVerified: false,
+			firstName: '',
+			lastName: '',
 			company: '',
 			marketingOptin: false,
+			turnstileToken: '',
+			error_turnstile: false,
 			address_rules: [
 				(value) => !!value || `Required.\n Example: ${DEFAULT_TESTING_ADDRESS}`,
 				(value) => /^(cheqd)1[a-z0-9]{38}$/.test(value) || 'Invalid cheqd address format.',
@@ -288,9 +171,20 @@
 				(v) => !!v || 'Email is required',
 				(v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'Email must be valid',
 			],
-			name_rules: [
-				(v) => !!v || 'Name is required',
-				(v) => v.length >= 2 || 'Name must be at least 2 characters',
+			privacy_rules: [
+				(v) => !!v || 'You must agree to the Privacy Policy to continue',
+			],
+			otp_rules: [
+				(v) => !!v || 'OTP is required',
+				(v) => /^\d{6}$/.test(v) || 'OTP must be 6 digits',
+			],
+			firstName_rules: [
+				(v) => !!v || 'First name is required',
+				(v) => v.length >= 2 || 'First name must be at least 2 characters',
+			],
+			lastName_rules: [
+				(v) => !!v || 'Last name is required',
+				(v) => v.length >= 2 || 'Last name must be at least 2 characters',
 			],
 			CHEQD_MINIMAL_DENOM,
 			CHEQD_CURRENT_AMOUNT_GIVEN,
@@ -299,206 +193,64 @@
 			loadingAddress: false,
 			leap_success: false,
 			leap_error: false,
+			leap_copy_error: false,
 			leap_not_installed: false,
 			leap_already_added: false,
 			error_rate_limit: false,
 		}),
 
-		methods: {
-			validate() {
-				this.$refs.form.validate();
-				return this.valid ? this.step++ : false;
+		watch: {
+			step(newStep, oldStep) {
+				// Prevent moving backwards
+				if (newStep < oldStep) {
+					this.$nextTick(() => {
+						this.step = oldStep;
+					});
+					return;
+				}
+				// Prevent going to step 2 without requesting OTP
+				if (newStep === 2 && !this.otpRequested) {
+					this.$nextTick(() => {
+						this.step = oldStep;
+					});
+					return;
+				}
+				// Prevent going to step 3 without verifying OTP
+				if (newStep === 3 && !this.otpVerified) {
+					this.$nextTick(() => {
+						this.step = oldStep;
+					});
+					return;
+				}
 			},
+		},
 
+		methods: {
 			handle_auto_dismiss(prop, interval = 4000) {
 				return setTimeout(() => {
 					this[prop] = false;
 				}, interval);
 			},
-
-			async verifyCaptcha() {
-				if (!this.token) {
-					this.error_turnstile = true;
-					this.handle_auto_dismiss('error_turnstile');
-					return false;
-				}
-
-				try {
-					const { data } = await axios.post('/api/verify-captcha', { token: this.token });
-					if (data.success) return true;
-
-					this.error_turnstile = true;
-					this.handle_auto_dismiss('error_turnstile');
-					return false;
-				} catch (error) {
-					console.error('Turnstile verification failed', error);
-					this.error_turnstile = true;
-					this.handle_auto_dismiss('error_turnstile');
-					return false;
-				}
+			verifyTurnstile() {
+				return verifyTurnstileHelper(this);
 			},
-
-			async handle_submit() {
-				if (this.loading) return;
-				this.loading = true;
-
-				try {
-					const isValidCaptcha = await this.verifyCaptcha();
-					if (!isValidCaptcha) {
-						this.error_turnstile = true;
-						this.handle_auto_dismiss('error_turnstile'); //obrisi
-						this.loading = false;
-						return;
-					}
-
-					const status = await this.handle_fetch();
-					if (status === 429) {
-						this.error_rate_limit = true;
-						this.handle_auto_dismiss('error_rate_limit');
-					} else if (!status) {
-						this.error_non_existing_address = true;
-						this.handle_auto_dismiss('error_non_existing_address');
-					} else if (status.data.status === 'ok') {
-						this.success = true;
-						this.handle_auto_dismiss('success');
-					} else {
-						this.error = true;
-						this.handle_auto_dismiss('error');
-					}
-				} catch (error) {
-					console.error('Submission failed:', error);
-					if (error.response?.status === 429) {
-						this.error_rate_limit = true;
-						this.handle_auto_dismiss('error_rate_limit');
-					} else {
-						this.error = true;
-						this.handle_auto_dismiss('error');
-					}
-				} finally {
-					this.loading = false;
-				}
+			handle_request_otp() {
+				return handleRequestOtp(this);
 			},
-
-			async handle_fetch() {
-				try {
-					const requestBody = {
-						denom: CHEQD_MINIMAL_DENOM,
-						address: this.address || DEFAULT_TESTING_ADDRESS,
-						email: this.email,
-						name: this.name,
-						marketing_optin: this.marketingOptin,
-						...(this.company && { company: this.company }),
-					};
-
-					return await axios.post(`${CHEQD_FAUCET_SERVER}/credit`, requestBody);
-				} catch (error) {
-					console.error('Fetch failed:', error);
-					if (error.response?.status === 429) {
-						return 429;
-					}
-					return false;
-				}
+			handle_verify_otp() {
+				return handleVerifyOtp(this);
 			},
-
-			async suggestCheqdTestnet() {
-				if (!window.leap) {
-					this.leap_not_installed = true;
-					this.handle_auto_dismiss('leap_not_installed');
-					return;
-				}
-
-				this.suggesting = true;
-
-				try {
-					await window.leap.getKey('cheqd-testnet-6');
-					this.leap_already_added = true;
-					this.handle_auto_dismiss('leap_already_added');
-					this.suggesting = false;
-					return;
-				} catch (error) {
-					try {
-						await window.leap.experimentalSuggestChain({
-							chainId: 'cheqd-testnet-6',
-							chainName: 'cheqd Testnet',
-							rest: 'https://api.cheqd.network',
-							rpc: 'https://rpc.cheqd.network',
-							bip44: {
-								coinType: 118,
-							},
-							bech32Config: {
-								bech32PrefixAccAddr: 'cheqd',
-								bech32PrefixAccPub: 'cheqdpub',
-								bech32PrefixValAddr: 'cheqdvaloper',
-								bech32PrefixValPub: 'cheqdvaloperpub',
-								bech32PrefixConsAddr: 'cheqdvalcons',
-								bech32PrefixConsPub: 'cheqdvalconspub',
-							},
-							currencies: [
-								{
-									coinDenom: 'CHEQ',
-									coinMinimalDenom: 'ncheq',
-									coinDecimals: 9,
-									coinGeckoId: 'cheqd-network',
-								},
-							],
-							feeCurrencies: [
-								{
-									coinDenom: 'CHEQ',
-									coinMinimalDenom: 'ncheq',
-									coinDecimals: 9,
-									coinGeckoId: 'cheqd-network',
-									gasPriceStep: {
-										low_gas_price: 5000,
-										average_gas_price: 7500,
-										high_gas_price: 10000,
-									},
-								},
-							],
-							stakeCurrency: {
-								coinDenom: 'CHEQ',
-								coinMinimalDenom: 'ncheq',
-								coinDecimals: 9,
-								coinGeckoId: 'cheqd-network',
-							},
-							image: 'https://raw.githubusercontent.com/cosmos/chain-registry/refs/heads/master/cheqd/images/cheq.svg',
-							theme: {
-								primaryColor: '#FE5000',
-								gradient:
-									'linear-gradient(180deg, rgba(254, 80, 0, 0.32) 0%, rgba(254, 80, 0, 0) 100%)',
-							},
-						});
-
-						this.leap_success = true;
-						this.handle_auto_dismiss('leap_success');
-					} catch (suggestError) {
-						console.error('Failed to suggest chain:', suggestError);
-						this.leap_error = true;
-						this.handle_auto_dismiss('leap_error');
-					}
-				} finally {
-					this.suggesting = false;
-				}
+			handle_submit() {
+				return handleSubmitHelper(this);
 			},
-
-			async getAddressFromLeap() {
-				if (!window.leap) {
-					this.leap_not_installed = true;
-					this.handle_auto_dismiss('leap_not_installed');
-					return;
-				}
-				this.loadingAddress = true;
-				try {
-					const [account] = await window.leap.getOfflineSigner('cheqd-testnet-6').getAccounts();
-					if (account?.address) {
-						this.address = account.address;
-					}
-				} catch (error) {
-					console.error('Failed to get address from Leap:', error);
-					this.leap_error = true;
-					this.handle_auto_dismiss('leap_error');
-				} finally {
-					this.loadingAddress = false;
-				}
+			handle_fetch() {
+				return handleFetchHelper(this);
+			},
+			suggestCheqdTestnet() {
+				return suggestCheqdTestnetHelper(this);
+			},
+			getAddressFromLeap() {
+				return getAddressFromLeapHelper(this);
 			},
 		},
 	};
